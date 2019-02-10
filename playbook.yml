@@ -7,6 +7,8 @@
   tasks:
     - import_role:
         name: user
+    - import_role:
+        name: ssh
 - name: "Install web server"
   hosts: all
   remote_user: "{{ user }}"

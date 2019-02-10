@@ -26,6 +26,9 @@ The init phase:
 - Creates the new user
 - Sets the SSH key
 - Gives sudo rights to this user
+- Changes the SSH port
+- Disables SSH password authentication
+- Disables SSH root login
 
 This phase connects to the server(s) as root and will prompt for the root password.
 
