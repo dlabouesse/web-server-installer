@@ -1,0 +1,6 @@
+all:
+  hosts:
+    domain.com:
+  vars:
+    user: ~
+    ssh_port: ~

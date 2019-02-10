@@ -1,0 +1,12 @@
+- name: Add user {{ user }}
+  user:
+    name: "{{ user }}"
+- name: Set ssh key for {{ user }}
+  authorized_key:
+    user: "{{ user }}"
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+- name: Give {{ user }} sudo rights
+  template:
+    src: templates/sudoers.j2
+    dest: /etc/sudoers.d/{{ user }}-sudoer
+    validate : visudo -cf %s
