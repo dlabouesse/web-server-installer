@@ -2,5 +2,5 @@ all:
   hosts:
     domain.com:
   vars:
-    user: ~
-    ssh_port: ~
+    ansible_user: #user
+    ansible_port: #ssh_port

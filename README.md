@@ -11,10 +11,12 @@ Tool to install and configure web servers from scratch using Ansible.
 ### Configuration
 
 1. Copy [hosts.yml.dist](hosts.yml.dist) into `hosts.yml`.
-2. Define your domains in the hosts list.
-3. Set the following variables:
-    - **user**: Desired username of the new user who will be attached to your SSH public key.
-    - **ssh_port**: Desired SSH port to use instead of the default 22 port.
+2. Copy [hosts.init.yml.dist](hosts.init.yml.dist) into `hosts.init.yml`.
+3. For both `hosts.yml` and `hosts.init.yml` files:
+    - Define your domains in the hosts list.
+    - Replace the following variables:
+        - `#user`: Desired username of the new user who will be attached to your SSH public key.
+        - `#ssh_port`: Desired SSH port to use instead of the default 22 port.
 
 ## Usage
 
@@ -32,12 +34,16 @@ The init phase:
 
 This phase connects to the server(s) as root and will prompt for the root password.
 
-Run `ansible-playbook -i hosts.yml playbook.yml -t init --ask-pass` to run this phase.
+Run `ansible-playbook -i hosts.init.yml playbook.init.yml --ask-pass` to run this phase.
 
 ## 2. Install phase [WIP]
 
-This phase connects to the server(s) as the specified user and uses your personal SSH key.
+The install phase:
+- Installs Docker
+
 ...
+
+This phase connects to the server(s) as the specified user and uses your personal SSH key.
 
 Run `ansible-playbook -i hosts.yml playbook.yml` to run this phase.
 

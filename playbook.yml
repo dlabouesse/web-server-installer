@@ -1,18 +1,6 @@
 ---
-- name: "Install web server (init)"
-  hosts: all
-  remote_user: root
-  tags: [ 'never', 'init' ]
-  gather_facts: no
-  tasks:
-    - import_role:
-        name: user
-    - import_role:
-        name: ssh
 - name: "Install web server"
   hosts: all
-  remote_user: "{{ user }}"
-  gather_facts: no
   tasks:
-    - set_fact:
-        ansible_port: "{{ ssh_port }}"
+    - import_role:
+        name: docker

@@ -1,2 +1,4 @@
 hosts.yml
+hosts.init.yml
 playbook.retry
+*.retry

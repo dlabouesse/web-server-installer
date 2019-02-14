@@ -1,0 +1,7 @@
+all:
+  hosts:
+    domain.com:
+  vars:
+    ansible_user: root
+    user: #user
+    ssh_port: #ssh_port

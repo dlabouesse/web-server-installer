@@ -1,0 +1,26 @@
+- name: "Install docker required packages"
+  become: yes
+  apt:
+    name: 
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+    update_cache: yes
+- name: "Add Docker's official GPG key"
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+- name: "Add Docker's repository"
+  become: yes
+  apt_repository: 
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_facts['distribution_release'] }} stable"
+- name: "Install docker"
+  become: yes
+  apt:
+    name: 
+      - docker-ce
+      - docker-ce-cli 
+      - containerd.io
+    update_cache: yes
