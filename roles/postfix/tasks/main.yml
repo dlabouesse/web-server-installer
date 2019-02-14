@@ -1,0 +1,32 @@
+- name: Set postfix main mailer type
+  debconf:
+    name: postfix
+    question: postfix/main_mailer_type
+    vtype: string
+    value: 'Internet Site'
+- name: Set postfix mailname
+  debconf:
+    name: postfix
+    question: postfix/mailname
+    vtype: string
+    value: '{{ hostname }}'
+- name: Install postfix
+  become: yes
+  apt:
+    name: 
+      - postfix
+    update_cache: yes
+- name: Configure postfix mydestination
+  become: yes
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regex: "^mydestination"
+    line: 'mydestination ='
+  notify: restart postfix
+- name: Configure postfix inet_interfaces
+  become: yes
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regex: "^inet_interfaces"
+    line: 'inet_interfaces = loopback-only'
+  notify: restart postfix

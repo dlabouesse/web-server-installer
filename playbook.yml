@@ -7,4 +7,6 @@
     - import_role:
         name: ntp
     - import_role:
-        name: hostname    
+        name: hostname
+    - import_role:
+        name: postfix
