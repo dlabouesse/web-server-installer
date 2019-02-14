@@ -6,3 +6,5 @@
         name: docker
     - import_role:
         name: ntp
+    - import_role:
+        name: hostname    
