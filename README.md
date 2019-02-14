@@ -17,6 +17,7 @@ Tool to install and configure web servers from scratch using Ansible.
     - Replace the following variables:
         - `#user`: Desired username of the new user who will be attached to your SSH public key.
         - `#ssh_port`: Desired SSH port to use instead of the default 22 port.
+        - `#hostname`: Desired domain name for the server to configure.
 
 ## Usage
 
