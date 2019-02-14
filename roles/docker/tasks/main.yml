@@ -24,3 +24,11 @@
       - docker-ce-cli 
       - containerd.io
     update_cache: yes
+- name: Create docker group
+  group:
+    name: docker
+- name: Add {{ ansible_user }} to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
