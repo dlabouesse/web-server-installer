@@ -1,0 +1,10 @@
+[DEFAULT]
+bantime     = -1
+findtime    = 3600
+maxretry    = 3
+destemail   = {{ admin_email }}
+sender      = fail2ban@{{ hostname }}
+action      = %(action_mw)s
+
+[sshd]
+port        = {{ ansible_port }}

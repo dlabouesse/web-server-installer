@@ -9,6 +9,8 @@
     - import_role:
         name: postfix
     - import_role:
-        name: docker
-    - import_role:
         name: cron-apt
+    - import_role:
+        name: fail2ban
+    - import_role:
+        name: docker

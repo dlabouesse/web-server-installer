@@ -43,8 +43,9 @@ The install phase:
 - Configures hostname
 - Installs and configures NTP
 - Installs and configures Postfix
-- Installs Docker
 - Sets up weekly security updates
+- Installs and configures fail2ban
+- Installs Docker
 
 ...
 
