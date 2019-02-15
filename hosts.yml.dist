@@ -5,3 +5,4 @@ all:
   vars:
     ansible_user: #user
     ansible_port: #ssh_port
+    admin_email:  #admin_email

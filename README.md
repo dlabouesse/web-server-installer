@@ -42,9 +42,9 @@ Run `ansible-playbook -i hosts.init.yml playbook.init.yml --ask-pass` to run thi
 The install phase:
 - Configures hostname
 - Installs and configures NTP
-- Installs and configures postfix
+- Installs and configures Postfix
 - Installs Docker
-- Upgrades all packages
+- Sets up weekly security updates
 
 ...
 
