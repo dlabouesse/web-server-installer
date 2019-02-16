@@ -1,0 +1,70 @@
+- name: Allow established connections
+  become: yes
+  iptables:
+    chain: INPUT
+    ctstate: ESTABLISHED
+    jump: ACCEPT
+- name: Allow SSH connections
+  become: yes
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: '{{ ansible_port }}'
+    jump: ACCEPT
+- name: Set the policy for the INPUT chain to DROP
+  become: yes
+  iptables:
+    chain: INPUT
+    policy: DROP
+- name: Allow loopback connections
+  become: yes
+  iptables:
+    action: insert
+    chain: INPUT
+    rule_num: 2
+    in_interface: lo
+    jump: ACCEPT
+- name: Allow incoming pings
+  become: yes
+  iptables:
+    chain: INPUT
+    protocol: icmp
+    jump: ACCEPT
+- name: Allow incoming HTTP connections
+  become: yes
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 80
+    jump: ACCEPT
+- name: Allow incoming HTTPS connections
+  become: yes
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 443
+    jump: ACCEPT
+- name:
+  become: yes
+  command: iptables-save -c
+- name: Set iptables-persistent autosave_v4
+  become: yes
+  debconf:
+    name: iptables-persistent
+    question: iptables-persistent/autosave_v4
+    vtype: boolean
+    value: true
+- name: Set iptables-persistent autosave_v6
+  become: yes
+  debconf:
+    name: iptables-persistent
+    question: iptables-persistent/autosave_v6
+    vtype: boolean
+    value: true
+- name: Install iptables-persistent
+  become: yes
+  apt:
+    name: 
+      - iptables-persistent
+    update_cache: yes
+  

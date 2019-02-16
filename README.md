@@ -46,6 +46,7 @@ The install phase:
 - Sets up weekly security updates
 - Installs and configures fail2ban
 - Installs Docker
+- Configures iptables
 
 ...
 
