@@ -25,9 +25,11 @@
       - containerd.io
     update_cache: yes
 - name: Create docker group
+  become: yes
   group:
     name: docker
 - name: Add {{ ansible_user }} to docker group
+  become: yes
   user:
     name: "{{ ansible_user }}"
     groups: docker

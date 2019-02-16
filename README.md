@@ -15,9 +15,10 @@ Tool to install and configure web servers from scratch using Ansible.
 3. For both `hosts.yml` and `hosts.init.yml` files:
     - Define your domains in the hosts list.
     - Replace the following variables:
+        - `#hostname`: Desired domain name for the server to configure.
         - `#user`: Desired username of the new user who will be attached to your SSH public key.
         - `#ssh_port`: Desired SSH port to use instead of the default 22 port.
-        - `#hostname`: Desired domain name for the server to configure.
+        - `#admin_email`: Email address to receive admin notifications.
 
 ## Usage
 

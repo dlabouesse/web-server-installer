@@ -1,6 +1,7 @@
 - name: Add user {{ user }}
   user:
     name: "{{ user }}"
+    shell: /bin/bash
 - name: Set ssh key for {{ user }}
   authorized_key:
     user: "{{ user }}"
