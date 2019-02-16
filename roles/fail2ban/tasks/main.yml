@@ -10,3 +10,19 @@
     src: jail.local.j2
     dest: /etc/fail2ban/jail.local
   notify: restart fail2ban
+- name: Configure actionban to persist ban IPs in a local file
+  become: yes
+  lineinfile:
+    path: /etc/fail2ban/action.d/iptables-multiport.conf
+    regex: '^\s*echo\s"<ip>"\s>>\s\/etc\/fail2ban\/ip\.blacklist'
+    insertafter: '^actionban\s=\s<iptables>\s-I\sf2b-<name>\s1\s-s\s<ip>\s-j\s<blocktype>$'
+    line: '            echo "<ip>" >> /etc/fail2ban/ip.blacklist'
+  notify: restart fail2ban
+- name: Configure actionstart to blacklist persisted banned IPs
+  become: yes
+  lineinfile:
+    path: /etc/fail2ban/action.d/iptables-multiport.conf
+    regex: '^\s*cat\s\/etc\/fail2ban\/ip\.blacklist'
+    insertafter: '^\s*<iptables>\s-I\s<chain>\s-p\s<protocol>\s-m\smultiport\s--dports\s<port>\s-j\sf2b-<name>$'
+    line: '              cat /etc/fail2ban/ip.blacklist | while read IP; do iptables -I fail2ban-<name> 1 -s $IP -j DROP; done'
+  notify: restart fail2ban
