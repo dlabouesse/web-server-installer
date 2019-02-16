@@ -46,8 +46,16 @@ The install phase:
 - Installs and configures Postfix
 - Sets up weekly security updates
 - Installs and configures fail2ban
+    - IPs are permanently blacklisted after 3 fails in the last hour
+    - IP blacklist is also persisted after reboot
 - Installs Docker
-- Configures iptables
+- Configures iptables firewall
+    - All ports will be blocked from external incoming connections excepted:
+        - SSH port (depends of `#ssh_port`)
+        - HTTP (80)
+        - HTTPS (443)
+    - All ports are opened to incoming connections from the loopback
+    - External ICMP incoming connections are allowed
 
 ...
 
