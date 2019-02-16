@@ -24,7 +24,7 @@ Tool to install and configure web servers from scratch using Ansible.
 
 This script is made of the two following parts:
 
-## 1. Init phase
+### 1. Init phase
 
 The init phase:
 - Creates the new user
@@ -38,7 +38,7 @@ This phase connects to the server(s) as root and will prompt for the root passwo
 
 Run `ansible-playbook -i hosts.init.yml playbook.init.yml --ask-pass` to run this phase.
 
-## 2. Install phase [WIP]
+### 2. Install phase [WIP]
 
 The install phase:
 - Configures hostname
