@@ -1,0 +1,5 @@
+- name: restart portsentry
+  become: yes
+  service:
+    name: portsentry
+    state: restarted

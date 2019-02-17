@@ -13,6 +13,8 @@
     - import_role:
         name: fail2ban
     - import_role:
+        name: portsentry
+    - import_role:
         name: docker
     - import_role:
         name: iptables

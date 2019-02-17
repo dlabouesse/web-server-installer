@@ -1,0 +1,49 @@
+- name: Install portsentry and mailutils
+  become: yes
+  apt:
+    name: 
+      - portsentry
+      - mailutils
+    update_cache: yes
+- name: Configure to block UDP scans
+  become: yes
+  lineinfile:
+    path: /etc/portsentry/portsentry.conf
+    regex: '^BLOCK_UDP="\d"$'
+    line: 'BLOCK_UDP="1"'
+  notify: restart portsentry
+- name: Configure to block TCP scans
+  become: yes
+  lineinfile:
+    path: /etc/portsentry/portsentry.conf
+    regex: '^BLOCK_TCP="\d"$'
+    line: 'BLOCK_TCP="1"'
+  notify: restart portsentry
+- name: Configure KILL_ROUTE to stop port scanning
+  become: yes
+  lineinfile:
+    path: /etc/portsentry/portsentry.conf
+    regex: '^#?KILL_ROUTE="\/sbin\/route\sadd\s-host\s\$TARGET\$\sreject"$'
+    line: 'KILL_ROUTE="/sbin/route add -host $TARGET$ reject"'
+  notify: restart portsentry
+- name: Configure KILL_RUN_CMD to ban scanner IP
+  become: yes
+  lineinfile: 
+    path: /etc/portsentry/portsentry.conf
+    regex: '^#?KILL_RUN_CMD='
+    line: KILL_RUN_CMD="/sbin/iptables -I INPUT -s $TARGET$ -j DROP && echo '$TARGET$ has been banned for port scanning.' | mail -s 'New banned IP' -a from:PortSentry\<portsentry@{{ hostname }}\> {{ admin_email }}
+  notify: restart portsentry
+- name: Configure TCP_MODE to advanced mode
+  become: yes
+  lineinfile: 
+    path: /etc/default/portsentry
+    regex: '^TCP_MODE='
+    line: 'TCP_MODE="atcp"'
+  notify: restart portsentry
+- name: Configure UDP_MODE to advanced mode
+  become: yes
+  lineinfile: 
+    path: /etc/default/portsentry
+    regex: '^UDP_MODE='
+    line: 'UDP_MODE="audp"'
+  notify: restart portsentry
