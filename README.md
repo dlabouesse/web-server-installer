@@ -50,6 +50,7 @@ The install phase:
     - IP blacklist is also persisted after reboot
 - Installs PortSentry to prevent port scanning and ban scanner IPs
 - Installs Docker
+- Installs NGINX as a reverse proxy
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
         - SSH port (depends of `#ssh_port`)

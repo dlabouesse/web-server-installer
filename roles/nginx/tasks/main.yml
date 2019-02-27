@@ -1,0 +1,40 @@
+- name: Create nginx-proxy directories
+  become: yes
+  file:
+    path: '{{item}}'
+    state: directory
+  loop:
+    - /var/www
+    - /var/www/nginx-proxy
+    - /var/www/nginx-proxy/conf.d
+    - /var/www/nginx-proxy/vhost.d
+    - /var/www/nginx-proxy/html
+    - /var/www/nginx-proxy/certs
+- name: Configure nginx-proxy docker-compose.yml
+  become: yes
+  template:
+    src: docker-compose.yml.j2
+    dest: /var/www/nginx-proxy/docker-compose.yml
+- name: Configure nginx-proxy template file
+  become: yes
+  get_url:
+    url: https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl
+    dest: /var/www/nginx-proxy/nginx.tmpl
+- name: Install pip
+  become: yes
+  apt:
+    name: 
+      - python-pip
+      - python-setuptools
+    update_cache: yes
+- name: Install Docker and Docker Compose SDKs for Python
+  pip:
+    name: 
+      - docker
+      - docker-compose
+- name: Create nginx-proxy Docker network
+  docker_network:
+    name: nginx-proxy
+- name: Run nginx-proxy Docker containers
+  docker_service:
+    project_src: /var/www/nginx-proxy/
