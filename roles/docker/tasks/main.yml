@@ -34,3 +34,15 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
+- name: Install pip
+  become: yes
+  apt:
+    name: 
+      - python-pip
+      - python-setuptools
+    update_cache: yes
+- name: Install Docker and Docker Compose SDKs for Python
+  pip:
+    name: 
+      - docker
+      - docker-compose

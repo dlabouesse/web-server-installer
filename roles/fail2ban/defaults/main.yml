@@ -1,0 +1,2 @@
+blacklist_path: '/etc/fail2ban'
+blacklist_file: 'ip.blacklist'

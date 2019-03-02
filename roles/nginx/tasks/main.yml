@@ -20,18 +20,6 @@
   get_url:
     url: https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl
     dest: /var/www/nginx-proxy/nginx.tmpl
-- name: Install pip
-  become: yes
-  apt:
-    name: 
-      - python-pip
-      - python-setuptools
-    update_cache: yes
-- name: Install Docker and Docker Compose SDKs for Python
-  pip:
-    name: 
-      - docker
-      - docker-compose
 - name: Create nginx-proxy Docker network
   docker_network:
     name: nginx-proxy

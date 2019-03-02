@@ -14,15 +14,15 @@
   become: yes
   lineinfile:
     path: /etc/fail2ban/action.d/iptables-multiport.conf
-    regex: '^\s*echo\s"<ip>"\s>>\s\/etc\/fail2ban\/ip\.blacklist'
+    regex: '^\s*echo\s"<ip>"\s>>\s\/etc\/fail2ban\/{{ blacklist_file }}'
     insertafter: '^actionban\s=\s<iptables>\s-I\sf2b-<name>\s1\s-s\s<ip>\s-j\s<blocktype>$'
-    line: '            echo "<ip>" >> /etc/fail2ban/ip.blacklist'
+    line: '            echo "<ip>" >> {{ blacklist_path }}/{{ blacklist_file }}'
   notify: restart fail2ban
 - name: Configure actionstart to blacklist persisted banned IPs
   become: yes
   lineinfile:
     path: /etc/fail2ban/action.d/iptables-multiport.conf
-    regex: '^\s*cat\s\/etc\/fail2ban\/ip\.blacklist'
+    regex: '^\s*cat\s\/etc\/fail2ban\/{{ blacklist_file }}'
     insertafter: '^\s*<iptables>\s-I\s<chain>\s-p\s<protocol>\s-m\smultiport\s--dports\s<port>\s-j\sf2b-<name>$'
-    line: '              cat /etc/fail2ban/ip.blacklist | while read IP; do iptables -I fail2ban-<name> 1 -s $IP -j DROP; done'
+    line: '              cat {{ blacklist_path }}/{{ blacklist_file }} | while read IP; do iptables -I fail2ban-<name> 1 -s $IP -j DROP; done'
   notify: restart fail2ban

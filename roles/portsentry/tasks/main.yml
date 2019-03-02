@@ -5,19 +5,15 @@
       - portsentry
       - mailutils
     update_cache: yes
-- name: Configure to block UDP scans
+- name: Configure to block TCP and UDP scans
   become: yes
   lineinfile:
     path: /etc/portsentry/portsentry.conf
-    regex: '^BLOCK_UDP="\d"$'
-    line: 'BLOCK_UDP="1"'
-  notify: restart portsentry
-- name: Configure to block TCP scans
-  become: yes
-  lineinfile:
-    path: /etc/portsentry/portsentry.conf
-    regex: '^BLOCK_TCP="\d"$'
-    line: 'BLOCK_TCP="1"'
+    regex: '^{{ item }}="\d"$'
+    line: '{{ item }}="1"'
+  loop:
+    - BLOCK_TCP
+    - BLOCK_UDP
   notify: restart portsentry
 - name: Configure KILL_ROUTE to stop port scanning
   become: yes
@@ -33,17 +29,13 @@
     regex: '^#?KILL_RUN_CMD='
     line: KILL_RUN_CMD="/sbin/iptables -I INPUT -s $TARGET$ -j DROP && echo '$TARGET$ has been banned for port scanning.' | mail -s 'New banned IP' -a from:PortSentry\<portsentry@{{ hostname }}\> {{ admin_email }}
   notify: restart portsentry
-- name: Configure TCP_MODE to advanced mode
+- name: Configure TCP and UDP to advanced mode
   become: yes
   lineinfile: 
     path: /etc/default/portsentry
-    regex: '^TCP_MODE='
-    line: 'TCP_MODE="atcp"'
-  notify: restart portsentry
-- name: Configure UDP_MODE to advanced mode
-  become: yes
-  lineinfile: 
-    path: /etc/default/portsentry
-    regex: '^UDP_MODE='
-    line: 'UDP_MODE="audp"'
+    regex: '^{{ item.mode }}='
+    line: '{{ item.mode }}="{{ item.value }}"'
+  loop:
+    - { mode: 'TCP_MODE', value: 'atcp' }
+    - { mode: 'UDP_MODE', value: 'audp' }
   notify: restart portsentry
