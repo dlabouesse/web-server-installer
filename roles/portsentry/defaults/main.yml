@@ -1,0 +1,2 @@
+blacklist_path: '/etc/portsentry'
+blacklist_file: 'ip.blacklist'

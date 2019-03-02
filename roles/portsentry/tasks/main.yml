@@ -27,7 +27,7 @@
   lineinfile: 
     path: /etc/portsentry/portsentry.conf
     regex: '^#?KILL_RUN_CMD='
-    line: KILL_RUN_CMD="/sbin/iptables -I INPUT -s $TARGET$ -j DROP && echo '$TARGET$ has been banned for port scanning.' | mail -s 'New banned IP' -a from:PortSentry\<portsentry@{{ hostname }}\> {{ admin_email }}
+    line: KILL_RUN_CMD="/sbin/iptables -I INPUT -s $TARGET$ -j DROP && echo '$TARGET$' >> {{ blacklist_path }}/{{ blacklist_file }} && echo '$TARGET$ has been banned for port scanning.' | mail -s 'New banned IP' -a from:PortSentry\<portsentry@{{ hostname }}\> {{ admin_email }}
   notify: restart portsentry
 - name: Configure TCP and UDP to advanced mode
   become: yes
@@ -39,3 +39,9 @@
     - { mode: 'TCP_MODE', value: 'atcp' }
     - { mode: 'UDP_MODE', value: 'audp' }
   notify: restart portsentry
+- name: Configure crontab to ban persisted IPs on reboot
+  become: yes
+  cron:
+    name: Ban PortSentry persisted IPs
+    special_time: reboot
+    job: cat {{ blacklist_path }}/{{ blacklist_file }} | while read IP; do iptables -I INPUT -s $IP -j DROP; done

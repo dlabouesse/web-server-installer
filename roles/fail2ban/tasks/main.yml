@@ -22,7 +22,7 @@
   become: yes
   lineinfile:
     path: /etc/fail2ban/action.d/iptables-multiport.conf
-    regex: '^\s*cat\s\/etc\/fail2ban\/{{ blacklist_file }}'
+    regex: '^\s*cat\s\{{ blacklist_path }}\/{{ blacklist_file }}'
     insertafter: '^\s*<iptables>\s-I\s<chain>\s-p\s<protocol>\s-m\smultiport\s--dports\s<port>\s-j\sf2b-<name>$'
     line: '              cat {{ blacklist_path }}/{{ blacklist_file }} | while read IP; do iptables -I fail2ban-<name> 1 -s $IP -j DROP; done'
   notify: restart fail2ban
