@@ -4,6 +4,10 @@
     chain: INPUT
     ctstate: ESTABLISHED
     jump: ACCEPT
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
 - name: Allow SSH connections
   become: yes
   iptables:
@@ -11,11 +15,19 @@
     protocol: tcp
     destination_port: '{{ ansible_port }}'
     jump: ACCEPT
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
 - name: Set the policy for the INPUT chain to DROP
   become: yes
   iptables:
     chain: INPUT
     policy: DROP
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
 - name: Allow loopback connections
   become: yes
   iptables:
@@ -24,12 +36,20 @@
     rule_num: 2
     in_interface: lo
     jump: ACCEPT
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
 - name: Allow incoming pings
   become: yes
   iptables:
     chain: INPUT
     protocol: icmp
     jump: ACCEPT
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
 - name: Allow incoming HTTP connections
   become: yes
   iptables:
@@ -37,6 +57,10 @@
     protocol: tcp
     destination_port: 80
     jump: ACCEPT
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
 - name: Allow incoming HTTPS connections
   become: yes
   iptables:
@@ -44,23 +68,31 @@
     protocol: tcp
     destination_port: 443
     jump: ACCEPT
-- name:
-  become: yes
-  command: iptables-save -c
-- name: Set iptables-persistent autosave_v4
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
+- name: Check for IPv4 existing dumps
+  stat:
+    path: /etc/iptables/rules.v4
+  register: iptables_rules_v4
+- name: Check for IPv6 existing dumps
+  stat:
+    path: /etc/iptables/rules.v4
+  register: iptables_rules_v6
+- name: Preconfigure iptables-persistent
   become: yes
   debconf:
     name: iptables-persistent
-    question: iptables-persistent/autosave_v4
+    question: '{{ item.question }}'
     vtype: boolean
-    value: true
-- name: Set iptables-persistent autosave_v6
-  become: yes
-  debconf:
-    name: iptables-persistent
-    question: iptables-persistent/autosave_v6
-    vtype: boolean
-    value: true
+    value: '{{ item.value }}'
+  loop:
+    - { question: 'iptables-persistent/autosave_v4', value: true }
+    - { question: 'iptables-persistent/autosave_v6', value: true }
+  when:
+    - iptables_rules_v4.stat.exists == False
+    - iptables_rules_v6.stat.exists == False
 - name: Install iptables-persistent
   become: yes
   apt:
