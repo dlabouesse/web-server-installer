@@ -34,6 +34,8 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
+- meta: flush_handlers
+- meta: reset_connection
 - name: Install Docker Compose
   become: yes
   get_url:
