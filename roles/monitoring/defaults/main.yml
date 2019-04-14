@@ -1,0 +1,2 @@
+grafana_port: 3000 #Used by the reverse proxy, is not publicly exposed
+grafana_subdomain: 'status'

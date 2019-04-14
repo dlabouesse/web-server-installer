@@ -1,0 +1,50 @@
+version: "3"
+services:
+    cadvisor:
+        image: google/cadvisor
+        restart: always
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+        expose:
+            - 8080
+    prometheus:
+        image: prom/prometheus
+        restart: always
+        volumes:
+            - ./prometheus/:/etc/prometheus/
+            - prometheus-data:/prometheus
+        command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--web.console.libraries=/etc/prometheus/console_libraries'
+            - '--web.console.templates=/etc/prometheus/consoles'
+            - '--storage.tsdb.retention=200h'
+        expose:
+            - 9090
+    grafana:
+        image: grafana/grafana
+        restart: always
+        volumes:
+            - grafana-data:/var/lib/grafana
+        expose:
+            - 3000
+        environment:
+            - VIRTUAL_HOST={{ grafana_subdomain }}.{{ hostname }}
+            - VIRTUAL_PORT={{ grafana_port }}
+            - LETSENCRYPT_HOST={{ grafana_subdomain }}.{{ hostname }}
+            - LETSENCRYPT_EMAIL={{ admin_email }}
+        networks:
+            - default
+            - proxy
+
+volumes:
+    prometheus-data:
+    grafana-data:
+
+networks:
+  proxy:
+    external:
+      name: nginx-proxy

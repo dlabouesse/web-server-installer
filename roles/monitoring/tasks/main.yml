@@ -1,0 +1,22 @@
+- name: Create monitoring directories
+  become: yes
+  file:
+    path: '{{item}}'
+    state: directory
+  loop:
+    - /var/www
+    - /var/www/monitoring
+    - /var/www/monitoring/prometheus
+- name: Configure monitoring docker-compose.yml
+  become: yes
+  template:
+    src: docker-compose.yml.j2
+    dest: /var/www/monitoring/docker-compose.yml
+- name: Configure prometheus.yml
+  become: yes
+  template:
+    src: prometheus.yml.j2
+    dest: /var/www/monitoring/prometheus/prometheus.yml
+- name: Run monitoring Docker containers
+  docker_service:
+    project_src: /var/www/monitoring/

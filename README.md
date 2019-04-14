@@ -51,6 +51,10 @@ The install phase:
 - Installs PortSentry to prevent port scanning and ban scanner IPs
 - Installs Docker
 - Installs NGINX as a reverse proxy
+- Installs and configure a monitoring interface
+    - cAdvisor is installed to collect Docker containers monitoring data
+    - Promotheus is installed to store cAdvisor data
+    - Grafana is installed as monitoring dashboard and exposed through HTTPS using the `status` subdomain
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
         - SSH port (depends of `#ssh_port`)

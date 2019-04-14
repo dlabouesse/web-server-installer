@@ -53,3 +53,8 @@
     path: /etc/cron.d/cron-apt
     regex: '^0 4	\*'
     line: '0 4	* * 1	root	test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt'
+- name: Configure MAILTO crontab user setting
+  cron:
+    name: MAILTO
+    env: yes
+    value: '{{ admin_email }}'

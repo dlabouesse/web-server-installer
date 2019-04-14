@@ -19,9 +19,6 @@
     - import_role:
         name: nginx
     - import_role:
+        name: monitoring
+    - import_role:
         name: iptables
-    - name: Configure MAILTO crontab user setting
-      cron:
-        name: MAILTO
-        env: yes
-        value: '{{ admin_email }}'
