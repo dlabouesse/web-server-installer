@@ -36,9 +36,17 @@ services:
             - VIRTUAL_PORT={{ grafana_port }}
             - LETSENCRYPT_HOST={{ grafana_subdomain }}.{{ hostname }}
             - LETSENCRYPT_EMAIL={{ admin_email }}
+            - GF_SMTP_ENABLED=true
+            - GF_SMTP_HOST=smtp:25
+            - GF_SMTP_FROM_ADDRESS=grafana@{{ hostname }}
         networks:
             - default
             - proxy
+    smtp:
+        image: namshi/smtp
+        restart: always
+        environment:
+            - MAILNAME={{ hostname }}
 
 volumes:
     prometheus-data:
