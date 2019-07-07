@@ -42,6 +42,18 @@ services:
         networks:
             - default
             - proxy
+    loki:
+        image: grafana/loki
+        restart: always
+        command: -config.file=/etc/loki/local-config.yaml
+        expose:
+            - 3100
+    promtail:
+        image: grafana/promtail
+        restart: always
+        volumes:
+            - /var/log:/var/log
+        command: -config.file=/etc/promtail/docker-config.yaml
     smtp:
         image: namshi/smtp
         restart: always
@@ -53,6 +65,9 @@ volumes:
     grafana-data:
 
 networks:
-  proxy:
-    external:
-      name: nginx-proxy
+    default:
+        external:
+            name: monitoring
+    proxy:
+        external:
+            name: nginx-proxy

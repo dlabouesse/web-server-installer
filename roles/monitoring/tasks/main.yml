@@ -17,6 +17,9 @@
   template:
     src: prometheus.yml.j2
     dest: /var/www/monitoring/prometheus/prometheus.yml
+- name: Create monitoring Docker network
+  docker_network:
+    name: monitoring
 - name: Run monitoring Docker containers
   docker_service:
     project_src: /var/www/monitoring/
