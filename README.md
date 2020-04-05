@@ -38,7 +38,7 @@ This phase connects to the server(s) as root and will prompt for the root passwo
 
 Run `ansible-playbook -i hosts.init.yml playbook.init.yml --ask-pass` to run this phase.
 
-### 2. Install phase [WIP]
+### 2. Install phase
 
 The install phase:
 - Configures hostname
@@ -49,7 +49,7 @@ The install phase:
     - IPs are permanently blacklisted after 3 fails in the last hour
     - IP blacklist is also persisted after reboot
 - Installs PortSentry to prevent port scanning and ban scanner IPs
-- Installs Docker
+- Installs Docker and Docker Compose (default version is 1.25.4)
 - Installs NGINX as a reverse proxy
 - Installs and configure a monitoring interface
     - cAdvisor is installed to collect Docker containers monitoring data
