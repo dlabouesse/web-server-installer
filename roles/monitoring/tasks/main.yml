@@ -23,3 +23,10 @@
 - name: Run monitoring Docker containers
   docker_service:
     project_src: /var/www/monitoring/
+- name: Configure weekly updates on Monday at 05:00
+  cron:
+    name: Update montoring Docker containers
+    minute: "0"
+    hour: "5"
+    weekday: "1"
+    job: "/usr/local/bin/docker-compose -f /var/www/monitoring/docker-compose.yml pull && /usr/local/bin/docker-compose -f /var/www/monitoring/docker-compose.yml up -d --build"

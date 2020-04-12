@@ -47,7 +47,7 @@
     path: /etc/cron-apt/action.d/3-download
     regex: '^dist-upgrade'
     line: 'dist-upgrade -y -o APT::Get::Show-Upgraded=true'
-- name: Configure crontab
+- name: Configure crontab to run every Monday at 04:00
   become: yes
   lineinfile:
     path: /etc/cron.d/cron-apt
