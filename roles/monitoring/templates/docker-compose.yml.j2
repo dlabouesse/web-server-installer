@@ -57,8 +57,6 @@ services:
     smtp:
         image: namshi/smtp
         restart: always
-        environment:
-            - MAILNAME={{ hostname }}
 
 volumes:
     prometheus-data:
