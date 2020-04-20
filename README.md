@@ -70,3 +70,7 @@ This phase connects to the server(s) as the specified user and uses your persona
 Run `ansible-playbook -i hosts.yml playbook.yml` to run this phase.
 
 **You're all set!**
+
+## Version control
+
+Loki and Promtail versions are temporarily frozen to v1.4.1 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) because of an issue preventing to run the Loki container latest version (`failed parsing config: /etc/loki/local-config.yaml: not a valid duration string: "0"`)
