@@ -29,6 +29,8 @@ services:
         restart: always
         volumes:
             - grafana-data:/var/lib/grafana
+            - ./grafana/provisioning/:/etc/grafana/provisioning/
+            - ./grafana/provisioning/dashboards/json/:/var/lib/grafana/dashboards/
         expose:
             - 3000
         environment:

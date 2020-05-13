@@ -7,6 +7,12 @@
     - /var/www
     - /var/www/monitoring
     - /var/www/monitoring/prometheus
+    - /var/www/monitoring/grafana
+    - /var/www/monitoring/grafana/provisioning
+    - /var/www/monitoring/grafana/provisioning/datasources
+    - /var/www/monitoring/grafana/provisioning/dashboards
+    - /var/www/monitoring/grafana/provisioning/dashboards/json
+    - /var/www/monitoring/grafana/provisioning/notifiers
 - name: Configure monitoring docker-compose.yml
   become: yes
   template:
@@ -17,6 +23,23 @@
   template:
     src: prometheus.yml.j2
     dest: /var/www/monitoring/prometheus/prometheus.yml
+- name: Provision default Grafana datasources, dashboards provider and notifiers
+  become: yes
+  template:
+    src: '{{item}}.yml.j2'
+    dest: /var/www/monitoring/grafana/provisioning/{{item}}/{{item}}.yaml
+  loop:
+    - datasources
+    - dashboards
+    - notifiers
+- name: Provision default Grafana dashboards
+  become: yes
+  copy  :
+    src: '{{item}}.json'
+    dest: /var/www/monitoring/grafana/provisioning/dashboards/json/{{item}}.json
+  loop:
+    - docker-monitoring
+    - docker-alerts
 - name: Create monitoring Docker network
   docker_network:
     name: monitoring
