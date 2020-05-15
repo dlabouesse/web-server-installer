@@ -1,0 +1,66 @@
+- name: Create openvpn directory
+  file:
+    path: ~/openvpn
+    state: directory
+- name: Create OpenVPN docker volume
+  docker_volume:
+    name: openvpn-data
+- name: Install expect
+  become: yes
+  apt:
+    name: expect
+    update_cache: yes
+- name: Copy configuration script
+  template:
+    src: configure-vpn.sh.j2
+    dest: ~/openvpn/configure-vpn.sh
+    mode: 0744
+  register: configuration_script
+- name: Copy parameters file
+  template:
+    src: script-configure.exp.j2
+    dest: ~/openvpn/script-configure.exp
+    mode: 0744
+  when: configuration_script.changed
+- name: Configure OpenVPN
+  command: ~/openvpn/script-configure.exp
+  when: configuration_script.changed
+- name: Copy client certificate script
+  template:
+    src: client-certificate.sh.j2
+    dest: ~/openvpn/client-certificate.sh
+    mode: 0744
+  register: certificate_script
+- name: Copy parameter file
+  template:
+    src: script-client.exp.j2
+    dest: ~/openvpn/script-client.exp
+    mode: 0744
+  when: certificate_script.changed
+- name: Generate client certificate
+  command: ~/openvpn/script-client.exp {{ item }}
+  loop: "{{ vpn_client_certificates }}"
+  when: certificate_script.changed
+- name: Remove parameters files
+  file:
+    path: ~/openvpn/{{ item }}.exp
+    state: absent
+  loop:
+    - script-configure
+    - script-client
+- name: Fetch client certificate
+  fetch:
+    src: ~/openvpn/{{ item }}.ovpn
+    dest: "{{ inventory_dir }}/"
+    flat: yes
+  loop: "{{ vpn_client_certificates }}"
+- name: Copy docker-compose.yml
+  copy  :
+    src: docker-compose.yml
+    dest: ~/openvpn/docker-compose.yml
+- name: Create openvpn Docker network
+  docker_network:
+    name: openvpn
+- name: Run OpenVPN Docker containers
+  docker_service:
+    project_src: ~/openvpn/

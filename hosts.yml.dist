@@ -7,4 +7,11 @@ all:
     ansible_port: #ssh_port
     admin_email:  #admin_email
     # Use the following line to force using python 3
-    # ansible_python_interpreter: /usr/bin/python3 
+    # ansible_python_interpreter: /usr/bin/python3
+    # =====VPN=====
+    # install_vpn: false
+    # vpn_ca_key_passphrase: this_passphrase_is_not_secure
+    # vpn_client_certificates:
+    #   - client_1
+    #   - client_2
+    #   - client_3

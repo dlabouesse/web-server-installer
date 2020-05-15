@@ -54,14 +54,18 @@ The install phase:
 - Installs and configure a monitoring interface
     - cAdvisor is installed to collect Docker containers monitoring data
     - Promotheus is installed to store cAdvisor data
-    - Grafana is installed as monitoring dashboard and exposed through HTTPS using the `status` subdomain
+    - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
         - SSH port (depends of `#ssh_port`)
         - HTTP (80)
         - HTTPS (443)
+        - OpenVPN (1194) (if installed)
     - All ports are opened to incoming connections from the loopback
     - External ICMP incoming connections are allowed
+- Installs OpenVPN (optional)
+    - Configures OpenVPN server
+    - Generates client certificates
 
 ...
 
@@ -74,3 +78,5 @@ Run `ansible-playbook -i hosts.yml playbook.yml` to run this phase.
 ## Version control
 
 Loki and Promtail versions are temporarily frozen to v1.4.1 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) because of an issue preventing to run the Loki container latest version (`failed parsing config: /etc/loki/local-config.yaml: not a valid duration string: "0"`)
+
+Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/docker/defaults/main.yml). (Currently set to 1.25.4)

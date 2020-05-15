@@ -72,6 +72,18 @@
   loop:
     - ipv4
     - ipv6
+- name: Allow incoming VPN connections
+  become: yes
+  iptables:
+    chain: INPUT
+    protocol: udp
+    destination_port: 1194
+    jump: ACCEPT
+    ip_version: '{{ item }}'
+  loop:
+    - ipv4
+    - ipv6
+  when: install_vpn is defined and install_vpn == true
 - name: Check for IPv4 existing dumps
   stat:
     path: /etc/iptables/rules.v4
@@ -96,7 +108,6 @@
 - name: Install iptables-persistent
   become: yes
   apt:
-    name: 
+    name:
       - iptables-persistent
     update_cache: yes
-  
