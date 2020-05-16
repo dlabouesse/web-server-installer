@@ -1,0 +1,16 @@
+- name: Create smb directory
+  file:
+    path: ~/smb
+    state: directory
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: ~/smb/docker-compose.yml
+- name: Run SMB Docker container
+  docker_service:
+    project_src: ~/smb/
+- name: Get smb container IP
+  shell: "docker inspect -f '{''{range .NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' samba"
+  register: SMB_CONTAINER_IP
+- name: Save smb container IP into hosts file
+  local_action: copy content="{{ SMB_CONTAINER_IP.stdout }} smb.{{ hostname }}" dest={{ inventory_dir }}/hosts

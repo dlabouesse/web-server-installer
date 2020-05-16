@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+    samba:
+        image: dperson/samba
+        container_name: samba
+        restart: always
+        volumes:
+{% for volume in smb_volumes %}
+            - {{ volume.path }}:{{ volume.path }}
+{% endfor %}
+        command: -p -u "{{ ansible_user }};{{ smb_password }}" -s "{% for volume in smb_volumes %}{{ volume.name }};{{ volume.path }};yes;no;no;{{ ansible_user }}{% endfor %}"
+
+networks:
+    default:
+        external:
+            name: openvpn
