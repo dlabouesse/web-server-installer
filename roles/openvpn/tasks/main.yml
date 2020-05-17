@@ -34,17 +34,16 @@
     src: client-certificate.sh.j2
     dest: ~/openvpn/client-certificate.sh
     mode: 0744
-  register: certificate_script
 - name: Copy parameter file
   template:
     src: script-client.exp.j2
     dest: ~/openvpn/script-client.exp
     mode: 0744
-  when: certificate_script.changed
 - name: Generate client certificate
   command: ~/openvpn/script-client.exp {{ item.name }} {{ item.passphrase }}
+  args:
+    creates: ~/openvpn/{{ item.name }}.ovpn
   loop: "{{ vpn_client_certificates }}"
-  when: certificate_script.changed
 - name: Configure fallback VPN using TCP on port 80
   lineinfile:
     path: ~/openvpn/{{ item.name }}.ovpn
@@ -52,18 +51,37 @@
     regexp: '^remote {{ hostname }} 80 tcp'
     line: 'remote {{ hostname }} 80 tcp'
   loop: "{{ vpn_client_certificates }}"
-  when: certificate_script.changed
-- name: Fetch client certificate
+- name: Copy OPT URLs generator script
+  template:
+    src: generate-otp-url.sh.j2
+    dest: ~/openvpn/generate-otp-url.sh
+    mode: 0744
+- name: Generate google authenticator URLs
+  become: yes
+  command: /home/{{ ansible_user }}/openvpn/generate-otp-url.sh
+- name: Fetch client certificates
   fetch:
     src: ~/openvpn/{{ item.name }}.ovpn
     dest: "{{ inventory_dir }}/"
     flat: yes
   loop: "{{ vpn_client_certificates }}"
-  when: certificate_script.changed
-- name: Remove client .ovpn files
+- name: Fetch OTP URLs file
+  become: true
+  fetch:
+    src: /home/{{ ansible_user }}/openvpn/otp-urls.md
+    dest: "{{ inventory_dir }}/"
+    flat: yes
+- name: Remove OTP URLs file
+  become: true
   file:
-    path: ~/openvpn/{{ item.name }}.ovpn
+    path: /home/{{ ansible_user }}/openvpn/otp-urls.md
     state: absent
+- name: Fetch client google_authenticator files
+  become: true
+  fetch:
+    src: /home/{{ ansible_user }}/openvpn/openvpn-data/conf/otp/{{ item.name }}.google_authenticator
+    dest: "{{ inventory_dir }}/"
+    flat: yes
   loop: "{{ vpn_client_certificates }}"
 - name: Remove parameters files
   file:

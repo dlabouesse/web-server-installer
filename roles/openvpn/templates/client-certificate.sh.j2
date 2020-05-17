@@ -2,3 +2,4 @@
 
 docker-compose -f ~/openvpn/docker-compose.yml run --rm openvpn easyrsa build-client-full $1
 docker-compose -f ~/openvpn/docker-compose.yml run --rm openvpn ovpn_getclient $1 > ~/openvpn/$1.ovpn
+docker-compose -f ~/openvpn/docker-compose.yml run --rm openvpn ovpn_otp_user $1

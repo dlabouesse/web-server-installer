@@ -50,9 +50,12 @@ match_max 100000
 expect -exact "Enter PEM pass phrase:"
 send -- "$client_passphrase\r"
 
-expect "Verifying - Enter PEM pass phrase:"
+expect -exact "Verifying - Enter PEM pass phrase:"
 send -- "$client_passphrase\r"
 
 expect -exact "Enter pass phrase for /etc/openvpn/pki/private/ca.key:"
 send -- "{{ vpn_ca_key_passphrase }}\r"
+
+expect -exact "Enter code from app (-1 to skip): "
+send -- "-1\r"
 expect eof

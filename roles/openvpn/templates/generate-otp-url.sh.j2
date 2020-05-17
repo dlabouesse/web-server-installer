@@ -1,0 +1,8 @@
+#!/bin/bash
+
+{% for item in vpn_client_certificates %}
+echo "# {{ item.name }}" >> /home/{{ ansible_user }}/openvpn/otp-urls.md
+echo "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=otpauth://totp/{{ item.name }}@{{ hostname }}%3Fsecret%3D$(head -1 /home/{{ ansible_user }}/openvpn/openvpn-data/conf/otp/{{ item.name }}.google_authenticator)"  >> /home/{{ ansible_user }}/openvpn/otp-urls.md
+echo "" >> /home/{{ ansible_user }}/openvpn/otp-urls.md
+
+{% endfor %}
