@@ -44,7 +44,7 @@
   docker_network:
     name: monitoring
 - name: Run monitoring Docker containers
-  docker_service:
+  docker_compose:
     project_src: /var/www/monitoring/
 - name: Configure weekly updates on Monday at 05:00
   cron:

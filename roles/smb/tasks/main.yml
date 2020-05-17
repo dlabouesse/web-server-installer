@@ -7,7 +7,7 @@
     src: docker-compose.yml.j2
     dest: ~/smb/docker-compose.yml
 - name: Run SMB Docker container
-  docker_service:
+  docker_compose:
     project_src: ~/smb/
 - name: Get smb container IP
   shell: "docker inspect -f '{''{range .NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' samba"

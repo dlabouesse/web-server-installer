@@ -24,7 +24,7 @@
   docker_network:
     name: nginx-proxy
 - name: Run nginx-proxy Docker containers
-  docker_service:
+  docker_compose:
     project_src: /var/www/nginx-proxy/
 - name: Configure weekly updates on Monday at 04:30
   cron:
