@@ -7,7 +7,9 @@ services:
         container_name: nginx
         restart: always
         ports:
-{% if install_vpn is undefined or install_vpn != true %}
+{% if install_vpn is defined and install_vpn == true %}
+            - "8080:80"
+{% else %}
             - "80:80"
 {% endif %}
             - "443:443"

@@ -8,8 +8,8 @@
     name: expect
     update_cache: yes
 - name: Copy docker-compose.yml
-  copy:
-    src: docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
     dest: ~/openvpn/docker-compose.yml
 - name: Create openvpn Docker network
   docker_network:

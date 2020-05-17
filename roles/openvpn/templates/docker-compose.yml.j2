@@ -20,15 +20,9 @@ services:
             - "80:1194/tcp"
         cap_add:
             - NET_ADMIN
-        command: ovpn_run --proto tcp --port-share nginx 80
-        networks:
-            - default
-            - proxy
+        command: ovpn_run --proto tcp --port-share {{ hostname }} 8080
 
 networks:
     default:
         external:
             name: openvpn
-    proxy:
-        external:
-            name: nginx-proxy
