@@ -5,18 +5,30 @@ services:
         container_name: openvpn
         restart: always
         volumes:
-            - openvpn-data:/etc/openvpn
+            - ~/openvpn/openvpn-data/conf:/etc/openvpn
         ports:
             - "1194:1194/udp"
         cap_add:
             - NET_ADMIN
-
-volumes:
-    openvpn-data:
-        external: true
-        name: openvpn-data
+    openvpn-fallback:
+        image: kylemanna/openvpn
+        container_name: openvpn-fallback
+        restart: always
+        volumes:
+            - ~/openvpn/openvpn-data/conf:/etc/openvpn
+        ports:
+            - "80:1194/tcp"
+        cap_add:
+            - NET_ADMIN
+        command: ovpn_run --proto tcp --port-share nginx 80
+        networks:
+            - default
+            - proxy
 
 networks:
     default:
         external:
             name: openvpn
+    proxy:
+        external:
+            name: nginx-proxy

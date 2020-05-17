@@ -49,7 +49,7 @@ The install phase:
     - IPs are permanently blacklisted after 3 fails in the last hour
     - IP blacklist is also persisted after reboot
 - Installs PortSentry to prevent port scanning and ban scanner IPs
-- Installs Docker and Docker Compose (default version is 1.25.4)
+- Installs Docker and Docker Compose (default version is 1.25.5)
 - Installs NGINX as a reverse proxy
 - Installs and configure a monitoring interface
     - cAdvisor is installed to collect Docker containers monitoring data
@@ -79,4 +79,4 @@ Run `ansible-playbook -i hosts.yml playbook.yml` to run this phase.
 
 Loki and Promtail versions are temporarily frozen to v1.4.1 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) because of an issue preventing to run the Loki container latest version (`failed parsing config: /etc/loki/local-config.yaml: not a valid duration string: "0"`)
 
-Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/docker/defaults/main.yml). (Currently set to 1.25.4)
+Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/docker/defaults/main.yml). (Currently set to 1.25.5)

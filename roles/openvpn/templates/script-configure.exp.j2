@@ -45,10 +45,10 @@ if {$force_conservative} {
 set timeout -1
 spawn ~/openvpn/configure-vpn.sh
 match_max 100000
-expect "Enter New CA Key Passphrase: /usr/local/bin/easyrsa:"
+expect "Enter New CA Key Passphrase:"
 send -- "{{ vpn_ca_key_passphrase }}\r"
 
-expect "Re-Enter New CA Key Passphrase: /usr/local/bin/easyrsa:"
+expect "Re-Enter New CA Key Passphrase:"
 send -- "{{ vpn_ca_key_passphrase }}\r"
 
 expect -exact "Common Name (eg: your user, host, or server name) \[Easy-RSA CA\]:"

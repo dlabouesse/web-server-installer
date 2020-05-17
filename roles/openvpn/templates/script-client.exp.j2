@@ -42,10 +42,17 @@ if {$force_conservative} {
 # -Don
 
 set client_name [lindex $argv 0]
+set client_passphrase [lindex $argv 1]
 
 set timeout -1
 spawn ~/openvpn/client-certificate.sh $client_name
 match_max 100000
+expect -exact "Enter PEM pass phrase:"
+send -- "$client_passphrase\r"
+
+expect "Verifying - Enter PEM pass phrase:"
+send -- "$client_passphrase\r"
+
 expect -exact "Enter pass phrase for /etc/openvpn/pki/private/ca.key:"
 send -- "{{ vpn_ca_key_passphrase }}\r"
 expect eof
