@@ -14,3 +14,10 @@
   register: SMB_CONTAINER_IP
 - name: Save smb container IP into hosts file
   local_action: copy content="{{ SMB_CONTAINER_IP.stdout }} smb.{{ hostname }}" dest={{ inventory_dir }}/hosts
+- name: Configure weekly updates on Monday at 06:30
+  cron:
+    name: Update smb Docker container
+    minute: "30"
+    hour: "6"
+    weekday: "1"
+    job: "/usr/local/bin/docker-compose -f /home/{{ ansible_user }}/smb/docker-compose.yml pull && /usr/local/bin/docker-compose -f /home/{{ ansible_user }}/smb/docker-compose.yml up -d --build"
