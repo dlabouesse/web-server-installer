@@ -8,6 +8,9 @@ services:
 {% for volume in smb_volumes %}
             - {{ volume.path }}:{{ volume.path }}
 {% endfor %}
+        networks:
+            default:
+                ipv4_address: {{ smb_container_ipv4 }}
         command: -p -u "{{ ansible_user }};{{ smb_password }}" -s "{% for volume in smb_volumes %}{{ volume.name }};{{ volume.path }};yes;no;no;{{ ansible_user }}{% endfor %}"
 
 networks:

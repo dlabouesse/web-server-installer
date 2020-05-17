@@ -55,17 +55,23 @@ The install phase:
     - cAdvisor is installed to collect Docker containers monitoring data
     - Promotheus is installed to store cAdvisor data
     - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain
+- Installs OpenVPN (optional)
+    - Configures 2 OpenVPN servers with 2FA enabled
+        - a first instance is configured on port 1194 using UDP
+        - a fallback instance is configured on port 80 using TCP (Enables port-sharing to redirect usual HTTP requests to port 8080)
+    - Generates client certificate(s)
+    - Generates QRCode URLs to configure 2FA for each client
+- Installs Samba (optional)
+    - Configure one or multiple shares
+    - Exposes a Samba server into a Docker container with a fixed IP address (172.21.0.4 by default), only reachable from the VPN subnet
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
-        - SSH port (depends of `#ssh_port`)
-        - HTTP (80)
-        - HTTPS (443)
-        - OpenVPN (1194) (if installed)
+        - SSH port (depends on `#ssh_port`)
+        - HTTP (80/TCP) (or 8080/TCP if OpenVPN is installed)
+        - HTTPS (443/TCP)
+        - OpenVPN (80/TCP & 1194/UDP) (if OpenVPN installed)
     - All ports are opened to incoming connections from the loopback
     - External ICMP incoming connections are allowed
-- Installs OpenVPN (optional)
-    - Configures OpenVPN server
-    - Generates client certificates
 
 ...
 

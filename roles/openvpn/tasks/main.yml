@@ -14,6 +14,8 @@
 - name: Create openvpn Docker network
   docker_network:
     name: openvpn
+    ipam_config:
+      - subnet: 172.21.0.0/16
 - name: Copy configuration script
   template:
     src: configure-vpn.sh.j2
