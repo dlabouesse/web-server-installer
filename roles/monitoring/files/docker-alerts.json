@@ -138,25 +138,18 @@
             "refId": "A"
           },
           {
-            "expr": "count(container_last_seen{name=~\"^cryptobot_.*\"})",
-            "format": "time_series",
-            "intervalFactor": 1,
-            "legendFormat": "cryptobot_",
-            "refId": "B"
-          },
-          {
             "expr": "count(container_last_seen{name=~\"^monitoring_.*\"})",
             "format": "time_series",
             "intervalFactor": 1,
             "legendFormat": "monitoring_",
-            "refId": "C"
+            "refId": "B"
           },
           {
             "expr": "count(container_last_seen{name=~\"^nginx.*\"})",
             "format": "time_series",
             "intervalFactor": 1,
             "legendFormat": "nginx",
-            "refId": "D"
+            "refId": "C"
           }
         ],
         "thresholds": [
