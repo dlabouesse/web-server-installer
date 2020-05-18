@@ -1,0 +1,18 @@
+- name: Create nextcloud directory
+  file:
+    path: "{{ nextcloud_dir }}"
+    state: directory
+- name: Copy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ nextcloud_dir }}/docker-compose.yml"
+- name: Run NextCloud Docker containers
+  docker_compose:
+    project_src: "{{ nextcloud_dir }}/"
+- name: Configure weekly updates on Monday at 07:00
+  cron:
+    name: Update NextCloud Docker containers
+    minute: "0"
+    hour: "7"
+    weekday: "1"
+    job: "/usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml pull && /usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml up -d --build"

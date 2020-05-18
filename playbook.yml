@@ -27,4 +27,7 @@
         name: smb
       when: install_vpn is defined and install_vpn == true
     - import_role:
+        name: nextcloud
+      when: install_nextcloud is defined and install_nextcloud == true
+    - import_role:
         name: iptables

@@ -64,6 +64,7 @@ The install phase:
 - Installs Samba (optional)
     - Configure one or multiple shares
     - Exposes a Samba server into a Docker container with a fixed IP address (172.21.0.4 by default), only reachable from the VPN subnet
+- Installs Nextcloud (optional)
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
         - SSH port (depends on `#ssh_port`)

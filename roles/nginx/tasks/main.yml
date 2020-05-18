@@ -15,6 +15,14 @@
   template:
     src: docker-compose.yml.j2
     dest: /var/www/nginx-proxy/docker-compose.yml
+- name: Configure max body size to 1GB
+  become: yes
+  lineinfile:
+    path: /var/www/nginx-proxy/conf.d/nextcloud.conf
+    regex: '^client_max_body_size'
+    line: 'client_max_body_size 1g;'
+    create: yes
+  when: install_nextcloud is defined and install_nextcloud == true
 - name: Configure nginx-proxy template file
   become: yes
   get_url:
