@@ -38,6 +38,8 @@
 - name: Create nginx-proxy Docker network
   docker_network:
     name: nginx-proxy
+    ipam_config:
+      - subnet: 172.18.0.0/16
 - name: Run nginx-proxy Docker containers
   docker_compose:
     project_src: /var/www/nginx-proxy/

@@ -18,6 +18,7 @@
         name: docker
     - import_role:
         name: nginx
+      tags: nginx
     - import_role:
         name: monitoring
     - import_role:
@@ -28,6 +29,7 @@
       when: install_vpn is defined and install_vpn == true
     - import_role:
         name: nextcloud
+      tags: nextcloud
       when: install_nextcloud is defined and install_nextcloud == true
     - import_role:
         name: iptables

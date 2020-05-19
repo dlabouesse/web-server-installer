@@ -65,6 +65,9 @@ The install phase:
     - Configure one or multiple shares
     - Exposes a Samba server into a Docker container with a fixed IP address (172.21.0.4 by default), only reachable from the VPN subnet
 - Installs Nextcloud (optional)
+    - Creates admin user account
+    - Preconfigures SMTP server
+    - See below for [additional manual operations](#nextcloud-manual-operations)
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
         - SSH port (depends on `#ssh_port`)
@@ -87,3 +90,11 @@ Run `ansible-playbook -i hosts.yml playbook.yml` to run this phase.
 Loki and Promtail versions are temporarily frozen to v1.4.1 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) because of an issue preventing to run the Loki container latest version (`failed parsing config: /etc/loki/local-config.yaml: not a valid duration string: "0"`)
 
 Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/docker/defaults/main.yml). (Currently set to 1.25.5)
+
+## NextCloud manual operations
+
+NextCloud install requires few additional operations to be fully optimized.
+
+Go to /settings/admin/overview, and if it is suggested to run `occ db:add-missing-indices` and `occ db:convert-filecache-bigint` then run:
+- `docker-compose exec -u www-data nextcloud php occ db:add-missing-indices`
+- `docker-compose exec -u www-data nextcloud php occ db:convert-filecache-bigint`

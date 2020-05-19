@@ -1,17 +1,20 @@
-- name: Create nextcloud directory
+- name: Create nextcloud directories
   file:
-    path: "{{ nextcloud_dir }}"
+    path: "{{ item }}"
     state: directory
-- name: Get nginx proxy container IP
-  shell: "docker inspect -f '{''{range .NetworkSettings.Networks}''}{''{.IPAddress}''}{''{end}''}' nginx"
-  register: NGINX_CONTAINER_IP
-- name: Copy Dockerfile and supevisord.conf files
+  loop:
+    - "{{ nextcloud_dir }}"
+    - "{{ nextcloud_dir }}/web"
+    - "{{ nextcloud_dir }}/nextcloud"
+- name: Copy configuration files
   copy  :
     src: '{{item}}'
     dest: '{{ nextcloud_dir }}/{{item}}'
   loop:
-    - Dockerfile
-    - supervisord.conf
+    - nextcloud/Dockerfile
+    - nextcloud/supervisord.conf
+    - web/Dockerfile
+    - web/nginx.conf
 - name: Copy docker-compose.yml
   template:
     src: docker-compose.yml.j2
@@ -19,6 +22,7 @@
 - name: Run NextCloud Docker containers
   docker_compose:
     project_src: "{{ nextcloud_dir }}/"
+    build: yes
 - name: Configure weekly updates on Monday at 07:00
   cron:
     name: Update NextCloud Docker containers

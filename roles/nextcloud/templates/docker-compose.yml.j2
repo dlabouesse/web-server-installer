@@ -2,15 +2,12 @@ version: "3.8"
 
 services:
     nextcloud:
-        build: .
+        build: ./nextcloud
         container_name: nextcloud
         restart: always
         volumes:
             - {{ nextcloud_volume }}/nextcloud:/var/www/html
         environment:
-            VIRTUAL_HOST: "{{ hostname }},www.{{ hostname }}"
-            LETSENCRYPT_HOST: "{{ hostname }},www.{{ hostname }}"
-            LETSENCRYPT_EMAIL: "{{ admin_email }}"
             MYSQL_HOST: db
             MYSQL_DATABASE: nextcloud
             MYSQL_USER: nextcloud_user
@@ -21,16 +18,15 @@ services:
             NEXTCLOUD_ADMIN_USER: "{{ ansible_user }}"
             NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_password }}"
             NEXTCLOUD_TRUSTED_DOMAINS: "{{ hostname }} www.{{ hostname }}"
-            TRUSTED_PROXIES: "{{ NGINX_CONTAINER_IP.stdout }}"
+            TRUSTED_PROXIES: 172.18.0.0/16
+            APACHE_DISABLE_REWRITE_IP: 1
             OVERWRITEPROTOCOL: https
         depends_on:
             - db
-        networks:
-            - default
-            - proxy
+            - smtp
     db:
         image: mariadb
-        container_name: nectxloud-db
+        container_name: nextcloud-db
         command: --transaction-isolation=READ-COMMITTED --log-bin=mysqld-bin --binlog-format=ROW
         restart: always
         volumes:
@@ -42,8 +38,23 @@ services:
             MYSQL_PASSWORD: "{{ nextcloud_db_password }}"
     smtp:
         image: namshi/smtp
-        container_name: nectxloud-smtp
+        container_name: nextcloud-smtp
         restart: always
+    web:
+        build: ./web
+        container_name: nextcloud-web
+        restart: always
+        volumes:
+            - {{ nextcloud_volume }}/nextcloud:/var/www/html:ro
+        environment:
+            VIRTUAL_HOST: "{{ hostname }},www.{{ hostname }}"
+            LETSENCRYPT_HOST: "{{ hostname }},www.{{ hostname }}"
+            LETSENCRYPT_EMAIL: "{{ admin_email }}"
+        depends_on:
+            - nextcloud
+        networks:
+            - default
+            - proxy
 
 networks:
     proxy:
