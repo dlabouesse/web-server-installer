@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
     nextcloud:
-        image: nextcloud:apache
+        build: .
         container_name: nextcloud
         restart: always
         volumes:
@@ -15,6 +15,14 @@ services:
             MYSQL_DATABASE: nextcloud
             MYSQL_USER: nextcloud_user
             MYSQL_PASSWORD: "{{ nextcloud_db_password }}"
+            SMTP_HOST: smtp
+            MAIL_DOMAIN: "{{ hostname }}"
+            MAIL_FROM_ADDRESS: nextcloud
+            NEXTCLOUD_ADMIN_USER: "{{ ansible_user }}"
+            NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_password }}"
+            NEXTCLOUD_TRUSTED_DOMAINS: "{{ hostname }} www.{{ hostname }}"
+            TRUSTED_PROXIES: "{{ NGINX_CONTAINER_IP.stdout }}"
+            OVERWRITEPROTOCOL: https
         depends_on:
             - db
         networks:
@@ -23,7 +31,7 @@ services:
     db:
         image: mariadb
         container_name: nectxloud-db
-        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+        command: --transaction-isolation=READ-COMMITTED --log-bin=mysqld-bin --binlog-format=ROW
         restart: always
         volumes:
             - {{ nextcloud_volume }}/db:/var/lib/mysql

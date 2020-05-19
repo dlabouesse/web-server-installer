@@ -23,6 +23,13 @@
     line: 'client_max_body_size 1g;'
     create: yes
   when: install_nextcloud is defined and install_nextcloud == true
+- name: Disable nginx buffering
+  become: yes
+  lineinfile:
+    path: /var/www/nginx-proxy/conf.d/nextcloud.conf
+    regex: '^proxy_request_buffering'
+    line: 'proxy_request_buffering off;'
+  when: install_nextcloud is defined and install_nextcloud == true
 - name: Configure nginx-proxy template file
   become: yes
   get_url:

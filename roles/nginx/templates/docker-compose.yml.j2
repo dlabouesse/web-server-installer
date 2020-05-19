@@ -43,6 +43,7 @@ services:
         environment:
             NGINX_DOCKER_GEN_CONTAINER: "nginx-gen"
             NGINX_PROXY_CONTAINER: "nginx"
+            DEFAULT_EMAIL: "{{ admin_email }}"
 networks:
     default:
         external:
