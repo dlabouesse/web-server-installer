@@ -4,6 +4,7 @@
   tasks:
     - import_role:
         name: hostname
+      tags: hostname
     - import_role:
         name: ntp
     - import_role:
