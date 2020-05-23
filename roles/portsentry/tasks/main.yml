@@ -1,9 +1,8 @@
-- name: Install portsentry and mailutils
+- name: Install portsentry
   become: yes
   apt:
     name:
       - portsentry
-      - mailutils
     update_cache: yes
 - name: Configure to block TCP and UDP scans
   become: yes
@@ -27,7 +26,7 @@
   lineinfile:
     path: /etc/portsentry/portsentry.conf
     regex: '^#?KILL_RUN_CMD='
-    line: KILL_RUN_CMD="/sbin/iptables -I INPUT -s $TARGET$ -j DROP && echo '$TARGET$' >> {{ blacklist_path }}/{{ blacklist_file }} && echo '$TARGET$ has been banned for port scanning.' | mail -s 'New banned IP' -a from:PortSentry\<portsentry@{{ hostname }}\> {{ admin_email }}
+    line: KILL_RUN_CMD="/sbin/iptables -I INPUT -s $TARGET$ -j DROP && echo '$TARGET$' >> {{ blacklist_path }}/{{ blacklist_file }} && echo '$TARGET$ has been banned for port scanning.' >> {{ log_file }}
   notify: restart portsentry
 - name: Configure ports 80 and 443 to be ignored
   become: yes

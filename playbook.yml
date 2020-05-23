@@ -12,8 +12,10 @@
         name: cron-apt
     - import_role:
         name: fail2ban
+      tags: fail2ban
     - import_role:
         name: portsentry
+      tags: portsentry
     - import_role:
         name: docker
     - import_role:
