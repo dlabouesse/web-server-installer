@@ -34,7 +34,7 @@
     - notifiers
 - name: Provision default Grafana dashboards
   become: yes
-  copy  :
+  copy:
     src: '{{item}}.json'
     dest: /var/www/monitoring/grafana/provisioning/dashboards/json/{{item}}.json
   loop:
@@ -43,6 +43,20 @@
 - name: Create monitoring Docker network
   docker_network:
     name: monitoring
+    ipam_config:
+      - subnet: 172.19.0.0/16
+- name: Check if Loki Docker driver has been installed
+  shell: "docker plugin ls --format '{''{.Name}''}' | grep loki || true"
+  register: loki_docker_driver
+- name: Install Loki Docker driver
+  command: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+  when: loki_docker_driver.stdout != "loki:latest"
+- name: Copy loki log driver default config file
+  become: yes
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+  notify: restart docker
 - name: Run monitoring Docker containers
   docker_compose:
     project_src: /var/www/monitoring/

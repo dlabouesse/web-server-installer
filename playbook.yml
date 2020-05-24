@@ -24,6 +24,7 @@
       tags: nginx
     - import_role:
         name: monitoring
+      tags: monitoring
     - import_role:
         name: openvpn
       when: install_vpn is defined and install_vpn == true

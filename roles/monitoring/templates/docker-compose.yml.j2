@@ -10,6 +10,8 @@ services:
             - /var/lib/docker/:/var/lib/docker:ro
         expose:
             - 8080
+        depends_on:
+            - loki
     prometheus:
         image: prom/prometheus
         restart: always
@@ -24,6 +26,8 @@ services:
             - '--storage.tsdb.retention=200h'
         expose:
             - 9090
+        depends_on:
+            - loki
     grafana:
         image: grafana/grafana
         restart: always
@@ -44,21 +48,30 @@ services:
         networks:
             - default
             - proxy
+        depends_on:
+            - loki
     loki:
         image: grafana/loki:1.4.1
         restart: always
         command: -config.file=/etc/loki/local-config.yaml
         expose:
             - 3100
+        networks:
+            default:
+                ipv4_address: {{ loki_container_ipv4 }}
     promtail:
         image: grafana/promtail:1.4.1
         restart: always
         volumes:
             - /var/log:/var/log
         command: -config.file=/etc/promtail/docker-config.yaml
+        depends_on:
+            - loki
     smtp:
         image: namshi/smtp
         restart: always
+        depends_on:
+            - loki
 
 volumes:
     prometheus-data:
