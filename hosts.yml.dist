@@ -8,10 +8,28 @@ all:
     admin_email:  #admin_email
     # Use the following line to force using python 3
     # ansible_python_interpreter: /usr/bin/python3
-    # =====VPN=====
-    # install_vpn: false
+
+    ########## VPN
+    # install_vpn: true
     # vpn_ca_key_passphrase: this_passphrase_is_not_secure
     # vpn_client_certificates:
+    #   - name: name_1
+    #     passphrase: passphrase_1
+    #   - name: name_2
+    #     passphrase: passphrase_2
+
+    ########## Samba
+    # smb_volumes:
+    #   - name: volume_name
+    #     path: /volume_path
+    # smb_password: password
+
+    ########## Nextcloud
+    # install_nextcloud: true
+    # nextcloud_volume: /volume_path
+    # nextcloud_db_password: password
+    # nextcloud_db_root_password: password
+    # nextcloud_admin_password: password
 
     ########## Wordpress
     # wordpress_websites:

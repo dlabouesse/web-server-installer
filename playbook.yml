@@ -27,6 +27,7 @@
       tags: monitoring
     - import_role:
         name: openvpn
+      tags: openvpn
       when: install_vpn is defined and install_vpn == true
     - import_role:
         name: smb

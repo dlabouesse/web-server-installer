@@ -59,7 +59,7 @@ The install phase:
     - Configures 2 OpenVPN servers with 2FA enabled
         - a first instance is configured on port 1194 using UDP
         - a fallback instance is configured on port 80 using TCP (Enables port-sharing to redirect usual HTTP requests to port 8080)
-    - Generates client certificate(s)
+    - Generates client certificate(s) and downloads the configuration file(s)
     - Generates QRCode URLs to configure 2FA for each client
 - Installs Samba (optional)
     - Configure one or multiple shares
@@ -99,6 +99,14 @@ NextCloud install requires few additional operations to be fully optimized.
 Go to /settings/admin/overview, and if it is suggested to run `occ db:add-missing-indices` and `occ db:convert-filecache-bigint` then run:
 - `docker-compose exec -u www-data nextcloud php occ db:add-missing-indices`
 - `docker-compose exec -u www-data nextcloud php occ db:convert-filecache-bigint`
+
+## Install an additional VPN client certificate
+
+In `hosts.yml`, add an item in the `vpn_client_certificates` list, and set:
+- `name`
+- `passphrase`
+
+Then, run `ansible-playbook -i hosts.yml playbook.yml --tags=openvpn` to create the new certificate.
 
 ## Install an additional WordPress website
 
