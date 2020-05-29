@@ -68,6 +68,7 @@ The install phase:
     - Creates admin user account
     - Preconfigures SMTP server
     - See below for [additional manual operations](#nextcloud-manual-operations)
+- Installs WordPress website(s) (optional)
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
         - SSH port (depends on `#ssh_port`)
@@ -98,3 +99,14 @@ NextCloud install requires few additional operations to be fully optimized.
 Go to /settings/admin/overview, and if it is suggested to run `occ db:add-missing-indices` and `occ db:convert-filecache-bigint` then run:
 - `docker-compose exec -u www-data nextcloud php occ db:add-missing-indices`
 - `docker-compose exec -u www-data nextcloud php occ db:convert-filecache-bigint`
+
+## Install an additional WordPress website
+
+In `hosts.yml`, add an item in the `wordpress_websites` list, and set:
+- `hostname` (The website will be installed in `/var/www/hostname/`)
+- `name` (Impacts the composer project name and the db name)
+- `db_user`
+- `db_password`
+- `db_root_password`
+
+Then, run `ansible-playbook -i hosts.yml playbook.yml --tags=wordpress` to deploy the new website.

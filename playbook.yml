@@ -36,4 +36,8 @@
       tags: nextcloud
       when: install_nextcloud is defined and install_nextcloud == true
     - import_role:
+        name: wordpress
+      tags: wordpress
+      when: wordpress_websites is defined and wordpress_websites | length > 0
+    - import_role:
         name: iptables

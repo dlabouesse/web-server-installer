@@ -1,0 +1,48 @@
+version: "3"
+services:
+    wordpress:
+        image: wordpress
+        restart: always
+        volumes:
+            - ./wordpress/wp-content/themes:/var/www/html/wp-content/themes
+            - ./wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+            - ./wordpress/wp-content/languages:/var/www/html/wp-content/languages
+            - ./wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
+        environment:
+            - WORDPRESS_DB_HOST=db
+            - WORDPRESS_DB_USER=${MYSQL_USER}
+            - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+            - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+            - WORDPRESS_CONFIG_EXTRA=define('FS_METHOD','direct');
+            - APACHE_RUN_USER=#${USER_UID}
+            - APACHE_RUN_GROUP=#${USER_UID}
+            - VIRTUAL_HOST=${VIRTUAL_HOST},www.${VIRTUAL_HOST}
+            - LETSENCRYPT_HOST=${VIRTUAL_HOST},www.${VIRTUAL_HOST}
+            - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+            - DOMAIN_NAME=${VIRTUAL_HOST}
+        networks:
+            - default
+            - proxy
+        depends_on:
+            - db
+    db:
+        image: mariadb
+        restart: always
+        volumes:
+            - dbdata:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    smtp:
+        image: namshi/smtp
+        restart: always
+
+volumes:
+    dbdata:
+
+networks:
+  proxy:
+    external:
+      name: nginx-proxy
