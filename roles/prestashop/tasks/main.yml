@@ -1,0 +1,38 @@
+- name: Create prestashop directories
+  become: yes
+  file:
+    path: '/var/www/{{item.hostname}}'
+    state: directory
+  loop: '{{ prestashop_websites }}'
+- name: Change ownership of the ps directories
+  become: yes
+  file:
+    path: '/var/www/{{item.hostname}}'
+    state: directory
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+  loop: '{{ prestashop_websites }}'
+- name: Configure prestashop docker-compose.yml
+  template:
+    src: .env.j2
+    dest: '/var/www/{{item.hostname}}/.env'
+  loop: '{{ prestashop_websites }}'
+- name: 'Get USER_UID'
+  command: id -u
+  register: USER_UID
+- name: 'Set USER_UID docker argument'
+  lineinfile:
+    path: '/var/www/{{item.hostname}}/.env'
+    regexp: '^USER_UID='
+    line: 'USER_UID={{ USER_UID.stdout }}'
+  loop: '{{ prestashop_websites }}'
+- name: 'Copy docker-compose.prod.yml file'
+  copy:
+    src: 'docker-compose.yml'
+    dest: '/var/www/{{item.hostname}}/docker-compose.yml'
+  loop: '{{ prestashop_websites }}'
+- name: Run PrestaShop Docker containers
+  docker_compose:
+    project_src: "/var/www/{{item.hostname}}/"
+    build: yes
+  loop: '{{ prestashop_websites }}'

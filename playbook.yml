@@ -41,4 +41,8 @@
       tags: wordpress
       when: wordpress_websites is defined and wordpress_websites | length > 0
     - import_role:
+        name: prestashop
+      tags: prestashop
+      when: prestashop_websites is defined and prestashop_websites | length > 0
+    - import_role:
         name: iptables

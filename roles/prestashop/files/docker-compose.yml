@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+    mysql:
+        image: mysql:5
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        restart: always
+        volumes:
+            - dbdata:/var/lib/mysql
+    apache:
+        image: prestashop/prestashop:1.7-7.3-apache
+        environment:
+            PS_INSTALL_AUTO: 1
+            DB_USER: ${MYSQL_USER}
+            DB_PASSWD: ${MYSQL_PASSWORD}
+            DB_NAME: ${MYSQL_DATABASE}
+            DB_SERVER: mysql
+            ADMIN_MAIL: ${LETSENCRYPT_EMAIL}
+            ADMIN_PASSWD: ${ADMIN_PASSWORD}
+            PS_DOMAIN: ${VIRTUAL_HOST}
+            PS_ENABLE_SSL: 1
+            PS_LANGUAGE: fr
+            PS_COUNTRY: fr
+            VIRTUAL_HOST: ${VIRTUAL_HOST},www.${VIRTUAL_HOST}
+            LETSENCRYPT_HOST: ${VIRTUAL_HOST},www.${VIRTUAL_HOST}
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+        restart: always
+        volumes:
+            - psdata:/var/www/html
+        networks:
+            - default
+            - proxy
+        depends_on:
+            - mysql
+            - smtp
+    smtp:
+        image: namshi/smtp
+        restart: always
+
+volumes:
+    dbdata:
+    psdata:
+
+networks:
+    proxy:
+        external:
+            name: nginx-proxy

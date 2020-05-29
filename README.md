@@ -59,7 +59,7 @@ The install phase:
     - Configures 2 OpenVPN servers with 2FA enabled
         - a first instance is configured on port 1194 using UDP
         - a fallback instance is configured on port 80 using TCP (Enables port-sharing to redirect usual HTTP requests to port 8080)
-    - Generates client certificate(s) and downloads the configuration file(s)
+    - Generates client certificate(s) and downloads the configuration file(s) (See [Install an additional VPN client certificate](#install-an-additional-vpn-client-certificate))
     - Generates QRCode URLs to configure 2FA for each client
 - Installs Samba (optional)
     - Configure one or multiple shares
@@ -68,7 +68,8 @@ The install phase:
     - Creates admin user account
     - Preconfigures SMTP server
     - See below for [additional manual operations](#nextcloud-manual-operations)
-- Installs WordPress website(s) (optional)
+- Installs WordPress website(s) (optional) (See [Install an additional WordPress website](#install-an-additional-WordPress-website))
+- Installs PrestaShop website(s) (optional) (See [Install an additional PrestaShop website](#Install-an-additional-PrestaShop-website))
 - Configures iptables firewall
     - All ports will be blocked from external incoming connections excepted:
         - SSH port (depends on `#ssh_port`)
@@ -118,3 +119,15 @@ In `hosts.yml`, add an item in the `wordpress_websites` list, and set:
 - `db_root_password`
 
 Then, run `ansible-playbook -i hosts.yml playbook.yml --tags=wordpress` to deploy the new website.
+
+## Install an additional PrestaShop website
+
+In `hosts.yml`, add an item in the `prestashop_websites` list, and set:
+- `hostname` (The website will be installed in `/var/www/hostname/`)
+- `name` (Impacts the composer project name and the db name)
+- `db_user`
+- `db_password`
+- `db_root_password`
+- `admin_password` (Used to access the back office. The login is the value of `admin_email`)
+
+Then, run `ansible-playbook -i hosts.yml playbook.yml --tags=prestashop` to deploy the new website.
