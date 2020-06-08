@@ -15,3 +15,8 @@
      - 2
      - 3
   notify: restart ntp
+- name: Set timezone to Europe/Paris
+  become: yes
+  timezone:
+    name: Europe/Paris
+  notify: restart cron

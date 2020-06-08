@@ -3,3 +3,8 @@
   service:
     name: ntp
     state: restarted
+- name: restart cron
+  become: yes
+  service:
+    name: cron
+    state: restarted
