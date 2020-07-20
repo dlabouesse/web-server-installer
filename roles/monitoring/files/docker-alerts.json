@@ -96,8 +96,8 @@
         "fill": 1,
         "fillGradient": 0,
         "gridPos": {
-          "h": 13,
-          "w": 12,
+          "h": 16,
+          "w": 24,
           "x": 0,
           "y": 0
         },
@@ -167,7 +167,7 @@
         "title": "All containers",
         "tooltip": {
           "shared": true,
-          "sort": 0,
+          "sort": 2,
           "value_type": "individual"
         },
         "type": "graph",
@@ -212,7 +212,7 @@
       "list": []
     },
     "time": {
-      "from": "now-3h",
+      "from": "now-24h",
       "to": "now"
     },
     "timepicker": {
