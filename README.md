@@ -45,6 +45,7 @@ The install phase:
 - Configures hostname
 - Installs and configures NTP
 - Installs and configures Postfix
+- Installs and configures OpenDKIM (Optional, see [Optional DKIM support](#Optional-DKIM-support))
 - Sets up weekly security updates
 - Installs and configures fail2ban
     - IPs are permanently blacklisted after 3 fails in the last hour
@@ -56,7 +57,7 @@ The install phase:
     - cAdvisor is installed to collect Docker containers monitoring data
     - Promotheus is installed to store cAdvisor data
     - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain
-    - Optional DKIM support  (see [Optional DKIM support](#Optional-DKIM-support))
+    - Optional DKIM support (see [Optional DKIM support](#Optional-DKIM-support))
 - Installs OpenVPN (optional)
     - Configures 2 OpenVPN servers with 2FA enabled
         - a first instance is configured on port 1194 using UDP
@@ -99,13 +100,11 @@ Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/do
 
 DKIM support can be enabled by defining the `enable_dkim` variable to `true` in `hosts.yml`.
 
-The private key must be located in the `hosts/{{domain}}/dkim_private.key` file.
+This script creates two separate DKIM configurations:
+- The first one uses the `server` selector, and is used for system emails like cron tasks.
+- The second one uses the `status` selector, and is used for grafana alerts.
 
-### DKIM setup intructions
-1. Run `openssl genrsa -out hosts/{{domain}}/dkim_private.key 2048` to create the private key.
-2. Run `openssl rsa -in hosts/{{domain}}/dkim_private.key -pubout -outform der 2> /dev/null | openssl base64 -A` to get the public key.
-3. Creates the following DNS records where `{{public_key}}` corresponds to your public key.
-    - `status._domainkey IN TXT "v=DKIM1;k=rsa;s=email;p={{public_key}};t=s;"`
+The scripts generate the RSA keys on the server side, and retrieves the details of the DNS records to configure in a `{{selector}}._domainkey.txt` file located in the `hosts/{{domain}}/` directory, where `{{selector}}` corresponds to the respective DKIM selector.
 
 ## NextCloud manual operations
 

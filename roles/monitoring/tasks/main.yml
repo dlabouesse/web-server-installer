@@ -20,12 +20,32 @@
     src: '{{playbook_dir}}/hosts/{{hostname}}/hubbed_hosts'
     dest: /var/www/monitoring/smtp/hubbed_hosts
   when: enable_dkim is defined and enable_dkim == true
-- name: Copy dkim private key
+- name: Install opendkim
   become: yes
-  copy:
-    src: '{{playbook_dir}}/hosts/{{hostname}}/dkim_private.key'
-    dest: /var/www/monitoring/smtp/dkim_private.key
+  apt:
+    name:
+      - opendkim
+      - opendkim-tools
+    update_cache: yes
   when: enable_dkim is defined and enable_dkim == true
+- name: Generate dkim keys
+  become: yes
+  command: opendkim-genkey -D /var/www/monitoring/smtp/ -d {{ hostname }} -s status
+  args:
+    creates: /var/www/monitoring/smtp/status.private
+  when: enable_dkim is defined and enable_dkim == true
+- name: Set private key permissions
+  become: yes
+  file:
+    path: /var/www/monitoring/smtp/status.private
+    mode: '644'
+  when: enable_dkim is defined and enable_dkim == true
+- name: Fetch DKIM public key
+  become: true
+  fetch:
+    src: /var/www/monitoring/smtp/status.txt
+    dest: "{{ inventory_dir }}/status._domainkey.txt"
+    flat: yes
 - name: Configure dkim
   become: yes
   copy:

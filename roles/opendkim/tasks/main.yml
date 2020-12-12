@@ -1,0 +1,67 @@
+- name: Install opendkim
+  become: yes
+  apt:
+    name:
+      - opendkim
+      - opendkim-tools
+    update_cache: yes
+- name: Generate dkim keys
+  become: yes
+  command: opendkim-genkey -D /etc/dkimkeys -d {{ hostname }} -s server
+  args:
+    creates: /etc/dkimkeys/server.private
+- name: Fetch DKIM public key
+  become: true
+  fetch:
+    src: /etc/dkimkeys/server.txt
+    dest: "{{ inventory_dir }}/server._domainkey.txt"
+    flat: yes
+- name: Configure DKIM domain name
+  become: yes
+  lineinfile:
+    path: /etc/opendkim.conf
+    regex: '^#?Domain'
+    line: 'Domain {{ hostname }}'
+  notify: restart opendkim
+- name: Configure DKIM selector
+  become: yes
+  lineinfile:
+    path: /etc/opendkim.conf
+    regex: '^#?Selector'
+    line: 'Selector server'
+  notify: restart opendkim
+- name: Configure DKIM key file
+  become: yes
+  lineinfile:
+    path: /etc/opendkim.conf
+    regex: '^#?KeyFile'
+    line: 'KeyFile  /etc/dkimkeys/server.private'
+  notify: restart opendkim
+- name: Configure opendkim socket
+  become: yes
+  lineinfile:
+    path: /etc/opendkim.conf
+    regex: '^#?Socket\s+local'
+    line: '#Socket			local:/var/run/opendkim/opendkim.sock'
+  notify: restart opendkim
+- name: Configure opendkim socket
+  become: yes
+  lineinfile:
+    path: /etc/opendkim.conf
+    regex: '^#?Socket\s+inet'
+    line: 'Socket inet:8891@localhost'
+  notify: restart opendkim
+- name: Configure postfix smtpd milters
+  become: yes
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regex: '^smtpd_milters'
+    line: 'smtpd_milters = inet:localhost:8891'
+  notify: reload postfix
+- name: Configure postfix non smtpd milters
+  become: yes
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regex: '^non_smtpd_milters'
+    line: 'non_smtpd_milters = $smtpd_milters'
+  notify: reload postfix
