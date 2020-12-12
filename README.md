@@ -10,10 +10,11 @@ Tool to install and configure web servers from scratch using Ansible.
 
 ### Configuration
 
-1. Copy [hosts.yml.dist](hosts.yml.dist) into `hosts.yml`.
-2. Copy [hosts.init.yml.dist](hosts.init.yml.dist) into `hosts.init.yml`.
-3. For both `hosts.yml` and `hosts.init.yml` files:
-    - Define your domains in the hosts list.
+1. Create a `hosts/{{domain}}` directory where `{{domain}}` is the domain name for the server to configure.
+2. Copy [hosts.yml.dist](hosts.yml.dist) into `./hosts/{{domain}}/hosts.yml`.
+3. Copy [hosts.init.yml.dist](hosts.init.yml.dist) into `hosts/{{domain}}/hosts.init.yml`.
+4. For both `hosts.yml` and `hosts.init.yml` files:
+    - Define your server IPs in the hosts list.
     - Replace the following variables:
         - `#hostname`: Desired domain name for the server to configure.
         - `#user`: Desired username of the new user who will be attached to your SSH public key.
@@ -36,7 +37,7 @@ The init phase:
 
 This phase connects to the server(s) as root and will prompt for the root password.
 
-Run `ansible-playbook -i hosts.init.yml playbook.init.yml --ask-pass` to run this phase.
+Run `ansible-playbook -i hosts/{{domain}}/hosts.init.yml playbook.init.yml --ask-pass` to run this phase.
 
 ### 2. Install phase
 
@@ -55,6 +56,7 @@ The install phase:
     - cAdvisor is installed to collect Docker containers monitoring data
     - Promotheus is installed to store cAdvisor data
     - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain
+    - Optional DKIM support  (see [Optional DKIM support](#Optional-DKIM-support))
 - Installs OpenVPN (optional)
     - Configures 2 OpenVPN servers with 2FA enabled
         - a first instance is configured on port 1194 using UDP
@@ -83,7 +85,7 @@ The install phase:
 
 This phase connects to the server(s) as the specified user and uses your personal SSH key.
 
-Run `ansible-playbook -i hosts.yml playbook.yml` to run this phase.
+Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this phase.
 
 **You're all set!**
 
@@ -92,6 +94,18 @@ Run `ansible-playbook -i hosts.yml playbook.yml` to run this phase.
 Loki and Promtail versions are temporarily frozen to v1.4.1 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) because of an issue preventing to run the Loki container latest version (`failed parsing config: /etc/loki/local-config.yaml: not a valid duration string: "0"`)
 
 Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/docker/defaults/main.yml). (Currently set to 1.25.5)
+
+## Optional DKIM support
+
+DKIM support can be enabled by defining the `enable_dkim` variable to `true` in `hosts.yml`.
+
+The private key must be located in the `hosts/{{domain}}/dkim_private.key` file.
+
+### DKIM setup intructions
+1. Run `openssl genrsa -out hosts/{{domain}}/dkim_private.key 2048` to create the private key.
+2. Run `openssl rsa -in hosts/{{domain}}/dkim_private.key -pubout -outform der 2> /dev/null | openssl base64 -A` to get the public key.
+3. Creates the following DNS records where `{{public_key}}` corresponds to your public key.
+    - `status._domainkey IN TXT "v=DKIM1;k=rsa;s=email;p={{public_key}};t=s;"`
 
 ## NextCloud manual operations
 
@@ -107,7 +121,7 @@ In `hosts.yml`, add an item in the `vpn_client_certificates` list, and set:
 - `name`
 - `passphrase`
 
-Then, run `ansible-playbook -i hosts.yml playbook.yml --tags=openvpn` to create the new certificate.
+Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=openvpn` to create the new certificate.
 
 ## Install an additional WordPress website
 
@@ -118,7 +132,7 @@ In `hosts.yml`, add an item in the `wordpress_websites` list, and set:
 - `db_password`
 - `db_root_password`
 
-Then, run `ansible-playbook -i hosts.yml playbook.yml --tags=wordpress` to deploy the new website.
+Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=wordpress` to deploy the new website.
 
 ## Install an additional PrestaShop website
 
@@ -130,4 +144,4 @@ In `hosts.yml`, add an item in the `prestashop_websites` list, and set:
 - `db_root_password`
 - `admin_password` (Used to access the back office. The login is the value of `admin_email`)
 
-Then, run `ansible-playbook -i hosts.yml playbook.yml --tags=prestashop` to deploy the new website.
+Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=prestashop` to deploy the new website.

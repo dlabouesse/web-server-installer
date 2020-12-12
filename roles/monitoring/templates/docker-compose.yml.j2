@@ -53,7 +53,7 @@ services:
     loki:
         image: grafana/loki:1.4.1
         restart: always
-        command: -config.file=/etc/loki/local-config.yaml
+        command: -config.file=/etc/loki/local-config.yaml -log.level=warn
         expose:
             - 3100
         networks:
@@ -70,6 +70,14 @@ services:
     smtp:
         image: namshi/smtp
         restart: always
+{% if enable_dkim is defined and enable_dkim == true %}
+        volumes:
+            - ./smtp/hubbed_hosts:/etc/exim4/hubbed_hosts
+            - ./smtp/dkim-config:/etc/exim4/_docker_additional_macros:ro
+            - ./smtp/dkim_private.key:/etc/exim4/domain.key:ro
+        environment:
+            - MAILNAME={{ hostname }}
+{% endif %}
         depends_on:
             - loki
 

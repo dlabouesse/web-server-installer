@@ -6,6 +6,7 @@
   loop:
     - /var/www
     - /var/www/monitoring
+    - /var/www/monitoring/smtp
     - /var/www/monitoring/prometheus
     - /var/www/monitoring/grafana
     - /var/www/monitoring/grafana/provisioning
@@ -13,6 +14,24 @@
     - /var/www/monitoring/grafana/provisioning/dashboards
     - /var/www/monitoring/grafana/provisioning/dashboards/json
     - /var/www/monitoring/grafana/provisioning/notifiers
+- name: Configure hubbed_hosts
+  become: yes
+  copy:
+    src: '{{playbook_dir}}/hosts/{{hostname}}/hubbed_hosts'
+    dest: /var/www/monitoring/smtp/hubbed_hosts
+  when: enable_dkim is defined and enable_dkim == true
+- name: Copy dkim private key
+  become: yes
+  copy:
+    src: '{{playbook_dir}}/hosts/{{hostname}}/dkim_private.key'
+    dest: /var/www/monitoring/smtp/dkim_private.key
+  when: enable_dkim is defined and enable_dkim == true
+- name: Configure dkim
+  become: yes
+  copy:
+    src: 'dkim-config'
+    dest: /var/www/monitoring/smtp/dkim-config
+  when: enable_dkim is defined and enable_dkim == true
 - name: Configure monitoring docker-compose.yml
   become: yes
   template:
