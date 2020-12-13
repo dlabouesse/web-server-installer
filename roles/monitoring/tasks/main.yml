@@ -46,6 +46,7 @@
     src: /var/www/monitoring/smtp/status.txt
     dest: "{{ inventory_dir }}/status._domainkey.txt"
     flat: yes
+  when: enable_dkim is defined and enable_dkim == true
 - name: Configure dkim
   become: yes
   copy:

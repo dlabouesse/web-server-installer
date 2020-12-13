@@ -100,6 +100,8 @@ Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/do
 
 DKIM support can be enabled by defining the `enable_dkim` variable to `true` in `hosts.yml`.
 
+To ensure deliverability of emails sent to the same domain than the server hostname, enabling DKIM requires a [hubbed_hosts](https://manpages.debian.org/jessie/exim4-config/exim4-config_files.5.en.html#/etc/exim4/hubbed_hosts) file located at `hosts/{{domain}}/hubbed_hosts`. If no mails are sent to the server hostname, you can leave this file empty.
+
 This script creates two separate DKIM configurations:
 - The first one uses the `server` selector, and is used for system emails like cron tasks.
 - The second one uses the `status` selector, and is used for grafana alerts.
