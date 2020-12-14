@@ -15,6 +15,7 @@
       when: enable_dkim is defined and enable_dkim == true
     - import_role:
         name: cron-apt
+      tags: cron-apt
     - import_role:
         name: fail2ban
       tags: fail2ban
