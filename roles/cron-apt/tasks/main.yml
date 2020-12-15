@@ -47,12 +47,12 @@
     path: /etc/cron-apt/action.d/3-download
     regex: '^dist-upgrade'
     line: 'dist-upgrade -y -o APT::Get::Show-Upgraded=true'
-- name: Configure crontab to run every Monday at 03:00
+- name: Configure crontab to run every Monday at 04:00
   become: yes
   lineinfile:
     path: /etc/cron.d/cron-apt
     regex: '^([\*\d]\s+){5}.+/usr/sbin/cron-apt$'
-    line: '0 3	* * 1	root	test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt'
+    line: '0 4	* * 1	root	test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt'
 - name: Configure MAILTO crontab user setting
   cron:
     name: MAILTO

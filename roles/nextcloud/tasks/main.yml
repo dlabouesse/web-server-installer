@@ -23,10 +23,10 @@
   docker_compose:
     project_src: "{{ nextcloud_dir }}/"
     build: yes
-- name: Configure weekly updates on Monday at 07:00
+- name: Configure weekly updates on Monday at 06:00
   cron:
     name: Update NextCloud Docker containers
     minute: "0"
-    hour: "7"
+    hour: "6"
     weekday: "1"
-    job: "/usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml pull && /usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml up -d --build"
+    job: "/usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml pull && /usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml up -d --build --force-recreate"

@@ -36,6 +36,7 @@
       when: install_vpn is defined and install_vpn == true
     - import_role:
         name: smb
+      tags: smb
       when: install_vpn is defined and install_vpn == true
     - import_role:
         name: nextcloud

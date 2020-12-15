@@ -43,10 +43,10 @@
 - name: Run nginx-proxy Docker containers
   docker_compose:
     project_src: /var/www/nginx-proxy/
-- name: Configure weekly updates on Monday at 04:30
+- name: Configure weekly updates on Monday at 05:00
   cron:
     name: Update nginx-proxy Docker containers
-    minute: "30"
-    hour: "4"
+    minute: "0"
+    hour: "5"
     weekday: "1"
-    job: "/usr/local/bin/docker-compose -f /var/www/nginx-proxy/docker-compose.yml pull && /usr/local/bin/docker-compose -f /var/www/nginx-proxy/docker-compose.yml up -d --build"
+    job: "/usr/local/bin/docker-compose -f /var/www/nginx-proxy/docker-compose.yml pull && /usr/local/bin/docker-compose -f /var/www/nginx-proxy/docker-compose.yml up -d --build --force-recreate"
