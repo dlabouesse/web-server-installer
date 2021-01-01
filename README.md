@@ -94,7 +94,7 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
 
 Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/docker/defaults/main.yml). (Currently set to 1.27.4)
 
-Docker Compose version is specified in [roles/docker/defaults/main.yml](roles/docker/defaults/main.yml). (Currently set to 1.25.5)
+According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 2.0.0 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2).
 
 ## Optional DKIM support
 

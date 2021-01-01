@@ -8,6 +8,8 @@
     - /var/www/monitoring
     - /var/www/monitoring/smtp
     - /var/www/monitoring/prometheus
+    - /var/www/monitoring/loki
+    - /var/www/monitoring/promtail
     - /var/www/monitoring/grafana
     - /var/www/monitoring/grafana/provisioning
     - /var/www/monitoring/grafana/provisioning/datasources
@@ -63,6 +65,16 @@
   template:
     src: prometheus.yml.j2
     dest: /var/www/monitoring/prometheus/prometheus.yml
+- name: Configure loki-config.yaml
+  become: yes
+  get_url:
+    url: https://raw.githubusercontent.com/grafana/loki/v2.0.0/cmd/loki/loki-local-config.yaml
+    dest: /var/www/monitoring/loki/loki-config.yaml
+- name: Configure promtail-config.yaml
+  become: yes
+  get_url:
+    url: https://raw.githubusercontent.com/grafana/loki/v2.0.0/cmd/promtail/promtail-docker-config.yaml
+    dest: /var/www/monitoring/promtail/promtail-config.yaml
 - name: Provision default Grafana datasources, dashboards provider and notifiers
   become: yes
   template:
@@ -100,6 +112,7 @@
 - name: Run monitoring Docker containers
   docker_compose:
     project_src: /var/www/monitoring/
+  notify: restart docker
 - name: Configure weekly updates on Monday at 05:15
   cron:
     name: Update montoring Docker containers
