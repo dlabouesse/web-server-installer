@@ -24,6 +24,7 @@
       tags: portsentry
     - import_role:
         name: docker
+      tags: docker
     - import_role:
         name: nginx
       tags: nginx
