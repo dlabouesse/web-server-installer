@@ -21,3 +21,11 @@
     hour: "5"
     weekday: "1"
     job: "/usr/local/bin/docker-compose -f /home/{{ ansible_user }}/smb/docker-compose.yml pull && /usr/local/bin/docker-compose -f /home/{{ ansible_user }}/smb/docker-compose.yml up -d --build --force-recreate"
+  when: auto_update is defined and auto_update == true
+- name: Disable weekly updates on Monday at 05:45
+  cron:
+    name: Update smb Docker container
+    state: absent
+  when: auto_update is not defined or auto_update == false
+
+

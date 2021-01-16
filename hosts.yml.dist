@@ -8,6 +8,8 @@ all:
     admin_email:  #admin_email
     # Use the following line to force using python 3
     # ansible_python_interpreter: /usr/bin/python3
+    enable_dkim: true
+    auto_update: false
 
     ########## VPN
     # install_vpn: true

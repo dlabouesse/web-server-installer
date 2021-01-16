@@ -30,3 +30,9 @@
     hour: "6"
     weekday: "1"
     job: "/usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml pull && /usr/local/bin/docker-compose -f {{ nextcloud_dir }}/docker-compose.yml up -d --build --force-recreate"
+  when: auto_update is defined and auto_update == true
+- name: Disable weekly updates on Monday at 06:00
+  cron:
+    name: Update NextCloud Docker containers
+    state: absent
+  when: auto_update is not defined or auto_update == false
