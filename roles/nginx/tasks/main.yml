@@ -43,6 +43,8 @@
 - name: Run nginx-proxy Docker containers
   docker_compose:
     project_src: /var/www/nginx-proxy/
+    pull: yes
+    build: yes
 - name: Configure weekly updates on Monday at 05:00
   cron:
     name: Update nginx-proxy Docker containers

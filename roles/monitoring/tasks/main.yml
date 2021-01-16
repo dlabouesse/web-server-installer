@@ -112,6 +112,8 @@
 - name: Run monitoring Docker containers
   docker_compose:
     project_src: /var/www/monitoring/
+    pull: yes
+    build: yes
   notify: restart docker
 - name: Configure weekly updates on Monday at 05:15
   cron:

@@ -1,7 +1,6 @@
 {
     "log-driver": "loki",
     "log-opts": {
-        "loki-url": "http://{{ loki_container_ipv4 }}:3100/loki/api/v1/push",
-        # https://grafana.com/docs/loki/latest/clients/docker-driver/configuration/#supported-log-opt-options
+        "loki-url": "http://{{ loki_container_ipv4 }}:3100/loki/api/v1/push"
     }
 }

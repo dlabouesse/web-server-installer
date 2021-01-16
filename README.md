@@ -108,6 +108,11 @@ This script creates two separate DKIM configurations:
 
 The scripts generate the RSA keys on the server side, and retrieves the details of the DNS records to configure in a `{{selector}}._domainkey.txt` file located in the `hosts/{{domain}}/` directory, where `{{selector}}` corresponds to the respective DKIM selector.
 
+## Auto updates
+Auto updates for reverse proxy and monitoring containers can be enabled be defining the `auto_update` variable to `true` in `hosts.yml`.
+
+If auto updates are disabled, these containers can be updated manually by running `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=nginx --tags=monitoring`.
+
 ## NextCloud manual operations
 
 NextCloud install requires few additional operations to be fully optimized.
