@@ -2,6 +2,6 @@
     "log-driver": "loki",
     "log-opts": {
         "loki-url": "http://{{ loki_container_ipv4 }}:3100/loki/api/v1/push",
-        "loki-batch-size": "400"
+        # https://grafana.com/docs/loki/latest/clients/docker-driver/configuration/#supported-log-opt-options
     }
 }

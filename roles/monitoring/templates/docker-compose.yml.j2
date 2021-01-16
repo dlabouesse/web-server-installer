@@ -67,7 +67,7 @@ services:
         volumes:
             - ./promtail/:/mnt/config/
             - /var/log:/var/log
-        command: -config.file=/mnt/config/promtail-config.yaml
+        command: -config.file=/mnt/config/promtail-config.yaml -log.level=warn
         depends_on:
             - loki
     smtp:
