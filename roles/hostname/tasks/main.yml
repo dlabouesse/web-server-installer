@@ -18,5 +18,5 @@
   become: yes
   lineinfile:
     path: /etc/hosts
-    regex: '127\.0\.1\.1\s+vps\d{5}'
+    regex: '127\.0\.1\.1\s+vps\.*'
     state: absent

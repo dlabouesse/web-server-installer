@@ -53,3 +53,4 @@
       when: prestashop_websites is defined and prestashop_websites | length > 0
     - import_role:
         name: iptables
+      tags: iptables
