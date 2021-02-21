@@ -27,10 +27,10 @@ services:
     db:
         image: mariadb
         container_name: nextcloud-db
-        command: --transaction-isolation=READ-COMMITTED --log-bin=mysqld-bin --binlog-format=ROW
+        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
         restart: always
         volumes:
-            - {{ nextcloud_volume }}/db:/var/lib/mysql
+            - {{ nextcloud_volume }}/nextcloud-db:/var/lib/mysql
         environment:
             MYSQL_ROOT_PASSWORD: "{{ nextcloud_db_root_password }}"
             MYSQL_DATABASE: nextcloud
