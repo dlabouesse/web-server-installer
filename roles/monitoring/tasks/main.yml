@@ -68,12 +68,12 @@
 - name: Configure loki-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.0.0/cmd/loki/loki-local-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v2.1.0/cmd/loki/loki-local-config.yaml
     dest: /var/www/monitoring/loki/loki-config.yaml
 - name: Configure promtail-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.0.0/cmd/promtail/promtail-docker-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v2.1.0/cmd/promtail/promtail-docker-config.yaml
     dest: /var/www/monitoring/promtail/promtail-config.yaml
 - name: Provision default Grafana datasources, dashboards provider and notifiers
   become: yes
