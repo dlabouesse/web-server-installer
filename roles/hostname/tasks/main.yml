@@ -1,3 +1,15 @@
+- name: Configure /etc/cloud/cloud.cfg
+  become: yes
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regex: 'preserve_hostname:'
+    line: 'preserve_hostname: true'
+- name: Configure /etc/cloud/cloud.cfg
+  become: yes
+  lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regex: 'manage_etc_hosts:'
+    line: 'manage_etc_hosts: false'
 - name: "Set hostname"
   become: yes
   hostname:
@@ -7,7 +19,7 @@
   lineinfile:
     path: /etc/hosts
     regex: '127\.0\.1\.1'
-    line: '127.0.1.1  {{ hostname }}'
+    line: '127.0.1.1 {{ hostname }}'
 - name: Configure /etc/hosts
   become: yes
   lineinfile:
