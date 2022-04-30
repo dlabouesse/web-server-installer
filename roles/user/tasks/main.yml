@@ -1,12 +1,12 @@
 - name: Add user {{ user }}
   become: yes
   user:
-    name: "{{ user }}"
+    name: "{{ user }}"
     shell: /bin/bash
-- name: Set ssh key for {{ user }}
+- name: Set ssh key for {{ user }}
   become: yes
   authorized_key:
-    user: "{{ user }}"
+    user: "{{ user }}"
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 - name: Give {{ user }} sudo rights
   become: yes

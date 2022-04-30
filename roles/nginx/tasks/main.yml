@@ -15,14 +15,14 @@
   template:
     src: docker-compose.yml.j2
     dest: /var/www/nginx-proxy/docker-compose.yml
-- name: Configure max body size to 1GB
+- name: Configure max body size
   become: yes
   lineinfile:
-    path: /var/www/nginx-proxy/conf.d/nextcloud.conf
+    path: /var/www/nginx-proxy/conf.d/upload.conf
     regex: '^client_max_body_size'
-    line: 'client_max_body_size 1g;'
+    line: 'client_max_body_size {{upload_max_size}};'
     create: yes
-  when: install_nextcloud is defined and install_nextcloud == true
+  when: upload_max_size is defined
 - name: Disable nginx buffering
   become: yes
   lineinfile:

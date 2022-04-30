@@ -10,6 +10,7 @@ all:
     # ansible_python_interpreter: /usr/bin/python3
     enable_dkim: true
     auto_update: false
+    # upload_max_size: 1g
 
     ########## VPN
     # install_vpn: true
