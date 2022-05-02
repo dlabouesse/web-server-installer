@@ -12,7 +12,7 @@
     src: docker-compose.yml.j2
     dest: ~/openvpn/docker-compose.yml
 - name: Create openvpn Docker network
-  docker_network:
+  community.docker.docker_network:
     name: openvpn
     ipam_config:
       - subnet: 172.21.0.0/16
@@ -93,7 +93,7 @@
     - script-configure
     - script-client
 - name: Run OpenVPN Docker containers
-  docker_compose:
+  community.docker.docker_compose:
     project_src: ~/openvpn/
 - name: Configure weekly updates on Monday at 05:30
   cron:

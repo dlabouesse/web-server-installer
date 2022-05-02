@@ -20,7 +20,7 @@
     src: docker-compose.yml.j2
     dest: "{{ nextcloud_dir }}/docker-compose.yml"
 - name: Run NextCloud Docker containers
-  docker_compose:
+  community.docker.docker_compose:
     project_src: "{{ nextcloud_dir }}/"
     build: yes
 - name: Configure weekly updates on Monday at 06:00

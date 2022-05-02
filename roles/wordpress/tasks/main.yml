@@ -32,7 +32,7 @@
     dest: '/var/www/{{item.hostname}}/docker-compose.yml'
   loop: '{{ wordpress_websites }}'
 - name: Run WordPress Docker containers
-  docker_compose:
+  community.docker.docker_compose:
     project_src: "/var/www/{{item.hostname}}/"
     build: yes
   loop: '{{ wordpress_websites }}'

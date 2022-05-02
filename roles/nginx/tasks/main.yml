@@ -36,12 +36,12 @@
     url: https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl
     dest: /var/www/nginx-proxy/nginx.tmpl
 - name: Create nginx-proxy Docker network
-  docker_network:
+  community.docker.docker_network:
     name: nginx-proxy
     ipam_config:
       - subnet: 172.18.0.0/16
 - name: Run nginx-proxy Docker containers
-  docker_compose:
+  community.docker.docker_compose:
     project_src: /var/www/nginx-proxy/
     pull: yes
     build: yes

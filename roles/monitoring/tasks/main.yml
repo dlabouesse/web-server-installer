@@ -68,12 +68,12 @@
 - name: Configure loki-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.1.0/cmd/loki/loki-local-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v2.5.0/cmd/loki/loki-local-config.yaml
     dest: /var/www/monitoring/loki/loki-config.yaml
 - name: Configure promtail-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.1.0/cmd/promtail/promtail-docker-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v2.5.0/clients/cmd/promtail/promtail-docker-config.yaml
     dest: /var/www/monitoring/promtail/promtail-config.yaml
 - name: Provision default Grafana datasources, dashboards provider and notifiers
   become: yes
@@ -93,16 +93,15 @@
     - docker-monitoring
     - docker-alerts
 - name: Create monitoring Docker network
-  docker_network:
+  community.docker.docker_network:
     name: monitoring
     ipam_config:
       - subnet: 172.19.0.0/16
-- name: Check if Loki Docker driver has been installed
-  shell: "docker plugin ls --format '{''{.Name}''}' | grep loki || true"
-  register: loki_docker_driver
 - name: Install Loki Docker driver
-  command: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
-  when: loki_docker_driver.stdout != "loki:latest"
+  community.docker.docker_plugin:
+    plugin_name: grafana/loki-docker-driver:2.5.0
+    alias: loki
+    state: enable
 - name: Copy loki log driver default config file
   become: yes
   template:
@@ -110,7 +109,7 @@
     dest: /etc/docker/daemon.json
   notify: restart docker
 - name: Run monitoring Docker containers
-  docker_compose:
+  community.docker.docker_compose:
     project_src: /var/www/monitoring/
     pull: yes
     build: yes
