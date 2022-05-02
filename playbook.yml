@@ -7,8 +7,10 @@
       tags: hostname
     - import_role:
         name: ntp
+      tags: ntp
     - import_role:
         name: postfix
+      tags: postfix
     - import_role:
         name: opendkim
       tags: opendkim
@@ -16,6 +18,7 @@
     - import_role:
         name: cron-apt
       tags: cron-apt
+      when: auto_update is defined
     - import_role:
         name: fail2ban
       tags: fail2ban

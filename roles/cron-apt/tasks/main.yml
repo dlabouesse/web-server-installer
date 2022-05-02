@@ -53,6 +53,14 @@
     path: /etc/cron.d/cron-apt
     regex: '^([\*\d]\s+){5}.+/usr/sbin/cron-apt$'
     line: '0 4	* * 1	root	test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt'
+  when: auto_update == true
+- name: Disable auto updates
+  become: yes
+  lineinfile:
+    path: /etc/cron.d/cron-apt
+    regex: '^([\*\d]\s+){5}.+/usr/sbin/cron-apt$'
+    state: absent
+  when: auto_update is not defined or auto_update == false
 - name: Configure MAILTO crontab user setting
   cron:
     name: MAILTO
