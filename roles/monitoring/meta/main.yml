@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: opendkim
+    when: enable_dkim is defined and enable_dkim == true
+  - role: caddy

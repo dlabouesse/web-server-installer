@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+    caddy:
+        image: caddy:2
+        container_name: caddy
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+            - "443:443/udp"
+        volumes:
+            - /var/www/caddy/Caddyfile:/etc/caddy/Caddyfile
+            - /var/www/caddy/sites-enabled/:/etc/caddy/sites-enabled/
+            - caddy_data:/data
+            - caddy_config:/config
+
+volumes:
+    caddy_data:
+    caddy_config:
+
+networks:
+    default:
+        name: caddy-proxy
+        external: true

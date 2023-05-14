@@ -6,9 +6,6 @@
         name: hostname
       tags: hostname
     - import_role:
-        name: ntp
-      tags: ntp
-    - import_role:
         name: postfix
       tags: postfix
     - import_role:
@@ -29,31 +26,29 @@
         name: docker
       tags: docker
     - import_role:
-        name: nginx
-      tags: nginx
+        name: caddy
+      tags: caddy
     - import_role:
         name: monitoring
       tags: monitoring
-    - import_role:
-        name: openvpn
-      tags: openvpn
-      when: install_vpn is defined and install_vpn == true
-    - import_role:
-        name: smb
-      tags: smb
-      when: install_vpn is defined and install_vpn == true
-    - import_role:
-        name: nextcloud
-      tags: nextcloud
-      when: install_nextcloud is defined and install_nextcloud == true
-    - import_role:
-        name: wordpress
-      tags: wordpress
-      when: wordpress_websites is defined and wordpress_websites | length > 0
-    - import_role:
-        name: prestashop
-      tags: prestashop
-      when: prestashop_websites is defined and prestashop_websites | length > 0
-    - import_role:
-        name: iptables
-      tags: iptables
+# The following roles have not been tested on Debian 11
+    # - import_role:
+    #     name: openvpn
+    #   tags: openvpn
+    #   when: install_vpn is defined and install_vpn == true
+    # - import_role:
+    #     name: smb
+    #   tags: smb
+    #   when: install_vpn is defined and install_vpn == true
+    # - import_role:
+    #     name: nextcloud
+    #   tags: nextcloud
+    #   when: install_nextcloud is defined and install_nextcloud == true
+    # - import_role:
+    #     name: wordpress
+    #   tags: wordpress
+    #   when: wordpress_websites is defined and wordpress_websites | length > 0
+    # - import_role:
+    #     name: prestashop
+    #   tags: prestashop
+    #   when: prestashop_websites is defined and prestashop_websites | length > 0

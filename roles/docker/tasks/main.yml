@@ -1,25 +1,23 @@
-# - name: "Install docker required packages"
-#   become: yes
-#   apt:
-#     name:
-#       - apt-transport-https
-#       - ca-certificates
-#       - curl
-#       - gnupg-agent
-#       - software-properties-common
-#     update_cache: yes
+- name: "Install docker required packages"
+  become: yes
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+    update_cache: yes
 - name: "Add Docker's official GPG key"
   become: yes
   apt_key:
     url: https://download.docker.com/linux/debian/gpg
-    keyring: /etc/apt/trusted.gpg.d/docker-archive-keyring.gpg
+    keyring: /etc/apt/trusted.gpg.d/docker.gpg
 - name: Get architecture
   command: dpkg --print-architecture
   register: dpkg_architecture
 - name: "Add Docker's repository"
   become: yes
   apt_repository:
-    repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/etc/apt/trusted.gpg.d/docker-archive-keyring.gpg] https://download.docker.com/linux/debian {{ ansible_facts['distribution_release'] }} stable"
+    repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/debian {{ ansible_facts['distribution_release'] }} stable"
 - name: "Install Docker"
   become: yes
   apt:
@@ -27,6 +25,7 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
+      - docker-buildx-plugin
       - docker-compose-plugin
     update_cache: yes
 - name: Create docker group
@@ -39,31 +38,16 @@
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
-- meta: flush_handlers
 - meta: reset_connection
-# - name: Install Docker Compose
-#   become: yes
-#   get_url:
-#     url: https://github.com/docker/compose/releases/download/{{ docker_composer_version }}/docker-compose-{{ ansible_facts['system'] }}-{{ ansible_facts['userspace_architecture'] }}
-#     dest: /usr/local/bin/docker-compose
-#     mode: 0755
-# - name: Install pip
-#   become: yes
-#   apt:
-#     name:
-#       - python-pip
-#       - python-setuptools
-#     update_cache: yes
-# - name: Install pip3
-#   become: yes
-#   apt:
-#     name:
-#       - python3-pip
-#     update_cache: yes
-#   when: ansible_python_interpreter is defined and ansible_python_interpreter == "/usr/bin/python3" or ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_version']|int >= 10
+- name: Install pip
+  become: yes
+  apt:
+    name:
+      - python3-pip
+    update_cache: yes
 - name: Install Docker and Docker Compose SDKs for Python
   pip:
     name:
-      # - docker
-      - docker-compose>=1.7.0,<2.0.0
+      - docker
+      - docker-compose<2.0.0
     state: latest

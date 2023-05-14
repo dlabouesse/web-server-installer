@@ -65,3 +65,4 @@
     regex: '^non_smtpd_milters'
     line: 'non_smtpd_milters = $smtpd_milters'
   notify: reload postfix
+- meta: flush_handlers

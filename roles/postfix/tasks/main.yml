@@ -11,7 +11,7 @@
 - name: Install postfix
   become: yes
   apt:
-    name: 
+    name:
       - postfix
     update_cache: yes
 - name: Configure postfix mydestination
@@ -28,3 +28,4 @@
     regex: "^inet_interfaces"
     line: 'inet_interfaces = loopback-only'
   notify: restart postfix
+- meta: flush_handlers

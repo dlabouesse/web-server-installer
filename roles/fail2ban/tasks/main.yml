@@ -1,7 +1,7 @@
 - name: Install fail2ban
   become: yes
   apt:
-    name: 
+    name:
       - fail2ban
     update_cache: yes
 - name: Configure fail2ban
@@ -10,19 +10,4 @@
     src: jail.local.j2
     dest: /etc/fail2ban/jail.local
   notify: restart fail2ban
-- name: Configure actionban to persist ban IPs in a local file
-  become: yes
-  lineinfile:
-    path: /etc/fail2ban/action.d/iptables-multiport.conf
-    regex: '^\s*echo\s"<ip>"\s>>\s\/etc\/fail2ban\/{{ blacklist_file }}'
-    insertafter: '^actionban\s=\s<iptables>\s-I\sf2b-<name>\s1\s-s\s<ip>\s-j\s<blocktype>$'
-    line: '            echo "<ip>" >> {{ blacklist_path }}/{{ blacklist_file }}'
-  notify: restart fail2ban
-- name: Configure actionstart to blacklist persisted banned IPs
-  become: yes
-  lineinfile:
-    path: /etc/fail2ban/action.d/iptables-multiport.conf
-    regex: '^\s*cat\s\{{ blacklist_path }}\/{{ blacklist_file }}'
-    insertafter: '^\s*<iptables>\s-I\s<chain>\s-p\s<protocol>\s-m\smultiport\s--dports\s<port>\s-j\sf2b-<name>$'
-    line: '              cat {{ blacklist_path }}/{{ blacklist_file }} | while read IP; do iptables -I fail2ban-<name> 1 -s $IP -j DROP; done'
-  notify: restart fail2ban
+- meta: flush_handlers

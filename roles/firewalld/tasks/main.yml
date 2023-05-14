@@ -1,0 +1,13 @@
+- name: Install firewalld
+  become: yes
+  apt:
+    name:
+      - firewalld
+    update_cache: yes
+- name: Configure ssh
+  become: yes
+  template:
+    src: ssh.xml.j2
+    dest: /etc/firewalld/services/ssh.xml
+  notify: Reload firewalld
+- meta: flush_handlers

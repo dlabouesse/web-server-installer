@@ -1,0 +1,29 @@
+- name: Create Caddy directories
+  become: yes
+  file:
+    path: '{{item}}'
+    state: directory
+  loop:
+    - /var/www
+    - /var/www/caddy
+    - /var/www/caddy/sites-enabled
+- name: Configure Caddyfile
+  become: yes
+  template:
+    src: 'Caddyfile.j2'
+    dest: /var/www/caddy/Caddyfile
+- name: Configure Caddy docker-compose.yml
+  become: yes
+  template:
+    src: docker-compose.yml.j2
+    dest: /var/www/caddy/docker-compose.yml
+- name: Create caddy-proxy Docker network
+  community.docker.docker_network:
+    name: caddy-proxy
+    ipam_config:
+      - subnet: 172.18.0.0/16
+- name: Run Caddy Docker container
+  community.docker.docker_compose:
+    project_src: /var/www/caddy/
+    pull: yes
+    build: yes

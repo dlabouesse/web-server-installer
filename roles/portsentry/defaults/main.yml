@@ -1,3 +1,0 @@
-blacklist_path: '/etc/portsentry'
-blacklist_file: 'ip.blacklist'
-log_file: '/var/log/portsentry.log'

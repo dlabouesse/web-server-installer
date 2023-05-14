@@ -2,24 +2,9 @@
   become: yes
   lineinfile:
     path: /etc/cloud/cloud.cfg
-    regex: 'preserve_hostname:'
-    line: 'preserve_hostname: true'
-- name: Configure /etc/cloud/cloud.cfg
-  become: yes
-  lineinfile:
-    path: /etc/cloud/cloud.cfg
-    regex: 'manage_etc_hosts:'
-    line: 'manage_etc_hosts: false'
-- name: "Set hostname"
-  become: yes
-  hostname:
-    name: '{{ hostname }}'
-- name: Configure /etc/hosts
-  become: yes
-  lineinfile:
-    path: /etc/hosts
-    regex: '127\.0\.1\.1'
-    line: '127.0.1.1 {{ hostname }}'
+    regex: 'fqdn:'
+    line: 'fqdn: {{ hostname }}'
+  notify: reboot machine
 - name: Configure /etc/hosts
   become: yes
   lineinfile:
@@ -30,5 +15,6 @@
   become: yes
   lineinfile:
     path: /etc/hosts
-    regex: '127\.0\.1\.1\s+vps\.*'
+    regex: '127\.0\.1\.1\s+vps[-\.]*'
     state: absent
+- meta: flush_handlers

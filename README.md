@@ -2,11 +2,17 @@
 
 Tool to install and configure web servers from scratch using Ansible.
 
+Tested with Debian 11 on OVHCloud VPS.
+
 ## Setup
 
 ### Requirements
 
-- You need a personal SSH key. The public key available in `~/.ssh/id_rsa.pub` will be attached to a new user created on your server(s).
+- The server must have a user account with sudo rights. (Ensure the user account has a password as well as the root account.) To configure the passwords you can:
+  - Run `sudo passwd user`
+  - Run `sudo su -` then `passwd`
+- Add your SSH public key to enable passwordless SSH login for the user account.
+- On localhost, please install the required Ansible mobules `ansible-galaxy collection install -r requirements.yml`
 
 ### Configuration
 
@@ -17,7 +23,7 @@ Tool to install and configure web servers from scratch using Ansible.
     - Define your server IPs in the hosts list.
     - Replace the following variables:
         - `#hostname`: Desired domain name for the server to configure.
-        - `#user`: Desired username of the new user who will be attached to your SSH public key.
+        - `#user`: username of the user account.
         - `#ssh_port`: Desired SSH port to use instead of the default 22 port.
         - `#admin_email`: Email address to receive admin notifications.
 
@@ -28,36 +34,38 @@ This script is made of the two following parts:
 ### 1. Init phase
 
 The init phase:
-- Creates the new user
-- Sets the SSH key
-- Gives sudo rights to this user
 - Changes the SSH port
 - Disables SSH password authentication
 - Disables SSH root login
 
-This phase connects to the server(s) as root and will prompt for the root password.
-
-Run `ansible-playbook -i hosts/{{domain}}/hosts.init.yml playbook.init.yml --ask-pass` to run this phase.
+Run `ansible-playbook -i hosts/{{domain}}/hosts.init.yml playbook.init.yml` to run this phase.
 
 ### 2. Install phase
 
 The install phase:
 - Configures hostname
-- Installs and configures NTP
 - Installs and configures Postfix
 - Installs and configures OpenDKIM (Optional, see [Optional DKIM support](#Optional-DKIM-support))
-- Sets up weekly security updates
-- Installs and configures fail2ban
-    - IPs are permanently blacklisted after 3 fails in the last hour
-    - IP blacklist is also persisted after reboot
-- Installs PortSentry to prevent port scanning and ban scanner IPs
-- Installs Docker and Docker Compose (default version is 1.25.5)
-- Installs NGINX as a reverse proxy
+- Optionally sets up weekly security updates
+- Installs and configures fail2ban. Also installs firewalld as firewall.
+- Installs PortSentry to prevent port scanning
+- Installs Docker and Docker Compose
+- Installs Caddy as a reverse proxy
 - Installs and configure a monitoring interface
     - cAdvisor is installed to collect Docker containers monitoring data
     - Promotheus is installed to store cAdvisor data
     - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain
     - Optional DKIM support (see [Optional DKIM support](#Optional-DKIM-support))
+
+This phase connects to the server(s) as the specified user and uses your personal SSH key.
+
+Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this phase.
+
+**You're all set!**
+
+---
+**The following operations have not been tested on Debian 11.**
+
 - Installs OpenVPN (optional)
     - Configures 2 OpenVPN servers with 2FA enabled
         - a first instance is configured on port 1194 using UDP
@@ -73,26 +81,11 @@ The install phase:
     - See below for [additional manual operations](#nextcloud-manual-operations)
 - Installs WordPress website(s) (optional) (See [Install an additional WordPress website](#install-an-additional-WordPress-website))
 - Installs PrestaShop website(s) (optional) (See [Install an additional PrestaShop website](#Install-an-additional-PrestaShop-website))
-- Configures iptables firewall
-    - All ports will be blocked from external incoming connections excepted:
-        - SSH port (depends on `#ssh_port`)
-        - HTTP (80/TCP) (or 8080/TCP if OpenVPN is installed)
-        - HTTPS (443/TCP)
-        - OpenVPN (80/TCP & 1194/UDP) (if OpenVPN installed)
-    - All ports are opened to incoming connections from the loopback
-    - External ICMP incoming connections are allowed
-
-...
-
-This phase connects to the server(s) as the specified user and uses your personal SSH key.
-
-Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this phase.
-
-**You're all set!**
+---
 
 ## Version control
 
-According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 2.5.0 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) and [roles/monitoring/tasks/main.yml](roles/monitoring/tasks/main.yml).
+According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 2.8.0 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) and [roles/monitoring/tasks/main.yml](roles/monitoring/tasks/main.yml).
 
 ## Optional DKIM support
 
@@ -109,7 +102,10 @@ The scripts generate the RSA keys on the server side, and retrieves the details 
 ## Auto updates
 Auto updates for reverse proxy and monitoring containers can be enabled be defining the `auto_update` variable to `true` in `hosts.yml`.
 
-If auto updates are disabled, these containers can be updated manually by running `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=nginx --tags=monitoring`.
+If auto updates are disabled, these containers can be updated manually by running `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=caddy --tags=monitoring`.
+
+---
+**The following features have not been tested with Debian 11**
 
 ## NextCloud manual operations
 

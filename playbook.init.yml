@@ -3,6 +3,4 @@
   hosts: all
   tasks:
     - import_role:
-        name: user
-    - import_role:
         name: ssh

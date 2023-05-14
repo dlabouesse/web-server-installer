@@ -4,7 +4,10 @@ findtime    = 3600
 maxretry    = 3
 destemail   = {{ admin_email }}
 sender      = fail2ban@{{ hostname }}
+banaction   = firewallcmd-multiport
+banaction_allports  = firewallcmd-allports
 action      = %(action_)s
 
 [sshd]
-port        = {{ ansible_port }}
+port    = {{ ansible_port }}
+mode    = aggressive

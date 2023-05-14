@@ -1,20 +1,21 @@
 version: "3"
 services:
     cadvisor:
-        image: google/cadvisor
-        restart: always
+        image: gcr.io/cadvisor/cadvisor
+        restart: unless-stopped
         volumes:
             - /:/rootfs:ro
-            - /var/run:/var/run:rw
+            - /var/run:/var/run:ro
             - /sys:/sys:ro
             - /var/lib/docker/:/var/lib/docker:ro
+            - /dev/disk/:/dev/disk:ro
         expose:
             - 8080
         depends_on:
             - loki
     prometheus:
         image: prom/prometheus
-        restart: always
+        restart: unless-stopped
         volumes:
             - ./prometheus/:/etc/prometheus/
             - prometheus-data:/prometheus
@@ -30,7 +31,7 @@ services:
             - loki
     grafana:
         image: grafana/grafana
-        restart: always
+        restart: unless-stopped
         volumes:
             - grafana-data:/var/lib/grafana
             - ./grafana/provisioning/:/etc/grafana/provisioning/
@@ -38,10 +39,6 @@ services:
         expose:
             - 3000
         environment:
-            - VIRTUAL_HOST={{ grafana_subdomain }}.{{ hostname }}
-            - VIRTUAL_PORT={{ grafana_port }}
-            - LETSENCRYPT_HOST={{ grafana_subdomain }}.{{ hostname }}
-            - LETSENCRYPT_EMAIL={{ admin_email }}
             - GF_SMTP_ENABLED=true
             - GF_SMTP_HOST=smtp:25
             - GF_SMTP_FROM_ADDRESS=grafana@{{ hostname }}
@@ -51,8 +48,8 @@ services:
         depends_on:
             - loki
     loki:
-        image: grafana/loki:2.5.0
-        restart: always
+        image: grafana/loki:2.8.0
+        restart: unless-stopped
         volumes:
             - ./loki/:/mnt/config/
         command: -config.file=/mnt/config/loki-config.yaml -log.level=warn
@@ -62,8 +59,8 @@ services:
             default:
                 ipv4_address: {{ loki_container_ipv4 }}
     promtail:
-        image: grafana/promtail:2.5.0
-        restart: always
+        image: grafana/promtail:2.8.0
+        restart: unless-stopped
         volumes:
             - ./promtail/:/mnt/config/
             - /var/log:/var/log
@@ -72,7 +69,7 @@ services:
             - loki
     smtp:
         image: namshi/smtp
-        restart: always
+        restart: unless-stopped
 {% if enable_dkim is defined and enable_dkim == true %}
         volumes:
             - ./smtp/hubbed_hosts:/etc/exim4/hubbed_hosts
@@ -90,8 +87,8 @@ volumes:
 
 networks:
     default:
-        external:
-            name: monitoring
+        name: monitoring
+        external: true
     proxy:
-        external:
-            name: nginx-proxy
+        name: caddy-proxy
+        external: true

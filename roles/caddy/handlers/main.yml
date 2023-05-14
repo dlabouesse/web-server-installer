@@ -1,0 +1,11 @@
+- name: reload caddy config
+  community.docker.docker_container_exec:
+    container: caddy
+    command: caddy reload
+    chdir: /etc/caddy
+- name: recreate caddy docker container
+  community.docker.docker_compose:
+    project_src: /var/www/caddy/
+    pull: yes
+    build: yes
+    recreate: always

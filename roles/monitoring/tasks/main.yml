@@ -22,14 +22,6 @@
     src: '{{playbook_dir}}/hosts/{{hostname}}/hubbed_hosts'
     dest: /var/www/monitoring/smtp/hubbed_hosts
   when: enable_dkim is defined and enable_dkim == true
-- name: Install opendkim
-  become: yes
-  apt:
-    name:
-      - opendkim
-      - opendkim-tools
-    update_cache: yes
-  when: enable_dkim is defined and enable_dkim == true
 - name: Generate dkim keys
   become: yes
   command: opendkim-genkey -D /var/www/monitoring/smtp/ -d {{ hostname }} -s status
@@ -68,12 +60,12 @@
 - name: Configure loki-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.5.0/cmd/loki/loki-local-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v2.8.0/cmd/loki/loki-local-config.yaml
     dest: /var/www/monitoring/loki/loki-config.yaml
 - name: Configure promtail-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.5.0/clients/cmd/promtail/promtail-docker-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v2.8.0/clients/cmd/promtail/promtail-docker-config.yaml
     dest: /var/www/monitoring/promtail/promtail-config.yaml
 - name: Provision default Grafana datasources, dashboards provider and notifiers
   become: yes
@@ -99,7 +91,7 @@
       - subnet: 172.19.0.0/16
 - name: Install Loki Docker driver
   community.docker.docker_plugin:
-    plugin_name: grafana/loki-docker-driver:2.5.0
+    plugin_name: grafana/loki-docker-driver:2.8.0
     alias: loki
     state: enable
 - name: Copy loki log driver default config file
@@ -107,24 +99,17 @@
   template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
-  notify: restart docker
 - name: Run monitoring Docker containers
   community.docker.docker_compose:
     project_src: /var/www/monitoring/
     pull: yes
     build: yes
-  notify: restart docker
-- name: Configure weekly updates on Monday at 05:15
-  cron:
-    name: Update monitoring Docker containers
-    minute: "15"
-    hour: "5"
-    weekday: "1"
-    job: "/usr/local/bin/docker-compose -f /var/www/monitoring/docker-compose.yml pull && /usr/local/bin/docker-compose -f /var/www/monitoring/docker-compose.yml up -d --build --force-recreate"
-  when: auto_update is defined and auto_update == true
-- name: Disable weekly updates on Monday at 05:15
-  cron:
-    name: Update monitoring Docker containers
-    state: absent
-  when: auto_update is not defined or auto_update == false
-
+  notify: recreate caddy docker container
+- meta: flush_handlers
+- name: Update Caddyfile
+  become: yes
+  template:
+    src: Caddyfile.j2
+    dest: /var/www/caddy/sites-enabled/{{ grafana_subdomain }}.{{ hostname }}
+  notify: reload caddy config
+- meta: flush_handlers
