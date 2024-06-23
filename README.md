@@ -2,7 +2,7 @@
 
 Tool to install and configure web servers from scratch using Ansible.
 
-Tested with Debian 11 on OVHCloud VPS.
+Tested with Debian 12 on OVHCloud KS3 server.
 
 ## Setup
 
@@ -11,7 +11,7 @@ Tested with Debian 11 on OVHCloud VPS.
 - The server must have a user account with sudo rights. (Ensure the user account has a password as well as the root account.) To configure the passwords you can:
   - Run `sudo passwd user`
   - Run `sudo su -` then `passwd`
-- Add your SSH public key to enable passwordless SSH login for the user account.
+- Add your SSH public key to enable passwordless SSH login for the user account. (`ssh-copy-id -i ~/.ssh/id_rsa user@hostanme`)
 - On localhost, please install the required Ansible mobules `ansible-galaxy collection install -r requirements.yml`
 
 ### Configuration
@@ -54,7 +54,7 @@ The install phase:
 - Installs and configure a monitoring interface
     - cAdvisor is installed to collect Docker containers monitoring data
     - Promotheus is installed to store cAdvisor data
-    - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain
+    - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain (defined in [roles/monitoring/defaults/main.yml](roles/monitoring/defaults/main.yml))
     - Optional DKIM support (see [Optional DKIM support](#Optional-DKIM-support))
 
 This phase connects to the server(s) as the specified user and uses your personal SSH key.

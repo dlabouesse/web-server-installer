@@ -2,6 +2,5 @@ all:
   hosts:
     127.0.0.1:
   vars:
-    ansible_user: root
-    user: #user
+    ansible_user: #user
     ssh_port: #ssh_port

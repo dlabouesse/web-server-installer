@@ -9,5 +9,6 @@ banaction_allports  = firewallcmd-allports
 action      = %(action_)s
 
 [sshd]
+backend = systemd
 port    = {{ ansible_port }}
 mode    = aggressive

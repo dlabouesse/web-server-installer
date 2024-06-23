@@ -14,13 +14,13 @@
     name:
       - postfix
     update_cache: yes
-- name: Configure postfix mydestination
-  become: yes
-  lineinfile:
-    path: /etc/postfix/main.cf
-    regex: "^mydestination"
-    line: 'mydestination ='
-  notify: restart postfix
+# - name: Configure postfix mydestination
+#   become: yes
+#   lineinfile:
+#     path: /etc/postfix/main.cf
+#     regex: "^mydestination"
+#     line: 'mydestination ='
+#   notify: restart postfix
 - name: Configure postfix inet_interfaces
   become: yes
   lineinfile:

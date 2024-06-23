@@ -16,42 +16,45 @@
     - /var/www/monitoring/grafana/provisioning/dashboards
     - /var/www/monitoring/grafana/provisioning/dashboards/json
     - /var/www/monitoring/grafana/provisioning/notifiers
+- name: Check for local hubbed_hosts file
+  local_action: stat path="{{playbook_dir}}/hosts/{{hostname}}/hubbed_hosts"
+  register: hubbed_hosts_file
 - name: Configure hubbed_hosts
   become: yes
   copy:
     src: '{{playbook_dir}}/hosts/{{hostname}}/hubbed_hosts'
     dest: /var/www/monitoring/smtp/hubbed_hosts
-  when: enable_dkim is defined and enable_dkim == true
+  when: enable_dkim is defined and enable_dkim == true and hubbed_hosts_file.stat.exists
 - name: Generate dkim keys
   become: yes
-  command: opendkim-genkey -D /var/www/monitoring/smtp/ -d {{ hostname }} -s status
+  command: opendkim-genkey -D /var/www/monitoring/smtp/ -d {{ hostname }} -s {{ grafana_subdomain }}
   args:
-    creates: /var/www/monitoring/smtp/status.private
+    creates: /var/www/monitoring/smtp/{{ grafana_subdomain }}.private
   when: enable_dkim is defined and enable_dkim == true
 - name: Set private key permissions
   become: yes
   file:
-    path: /var/www/monitoring/smtp/status.private
+    path: /var/www/monitoring/smtp/{{ grafana_subdomain }}.private
     mode: '644'
   when: enable_dkim is defined and enable_dkim == true
 - name: Fetch DKIM public key
   become: true
   fetch:
-    src: /var/www/monitoring/smtp/status.txt
-    dest: "{{ inventory_dir }}/status._domainkey.txt"
+    src: /var/www/monitoring/smtp/{{ grafana_subdomain }}.txt
+    dest: "{{ inventory_dir }}/{{ grafana_subdomain }}._domainkey.txt"
     flat: yes
   when: enable_dkim is defined and enable_dkim == true
 - name: Configure dkim
   become: yes
-  copy:
-    src: 'dkim-config'
+  template:
+    src: dkim-config.j2
     dest: /var/www/monitoring/smtp/dkim-config
   when: enable_dkim is defined and enable_dkim == true
-- name: Configure monitoring docker-compose.yml
+- name: Configure monitoring Docker compose.yml
   become: yes
   template:
-    src: docker-compose.yml.j2
-    dest: /var/www/monitoring/docker-compose.yml
+    src: compose.yml.j2
+    dest: /var/www/monitoring/compose.yml
 - name: Configure prometheus.yml
   become: yes
   template:
@@ -60,30 +63,30 @@
 - name: Configure loki-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.8.0/cmd/loki/loki-local-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v{{ loki_version }}/cmd/loki/loki-local-config.yaml
     dest: /var/www/monitoring/loki/loki-config.yaml
 - name: Configure promtail-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v2.8.0/clients/cmd/promtail/promtail-docker-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/v{{ loki_version }}/clients/cmd/promtail/promtail-docker-config.yaml
     dest: /var/www/monitoring/promtail/promtail-config.yaml
-- name: Provision default Grafana datasources, dashboards provider and notifiers
-  become: yes
-  template:
-    src: '{{item}}.yml.j2'
-    dest: /var/www/monitoring/grafana/provisioning/{{item}}/{{item}}.yaml
-  loop:
-    - datasources
-    - dashboards
-    - notifiers
-- name: Provision default Grafana dashboards
-  become: yes
-  copy:
-    src: '{{item}}.json'
-    dest: /var/www/monitoring/grafana/provisioning/dashboards/json/{{item}}.json
-  loop:
-    - docker-monitoring
-    - docker-alerts
+# - name: Provision default Grafana datasources, dashboards provider and notifiers
+#   become: yes
+#   template:
+#     src: '{{item}}.yml.j2'
+#     dest: /var/www/monitoring/grafana/provisioning/{{item}}/{{item}}.yaml
+#   loop:
+#     - datasources
+#     - dashboards
+#     - notifiers
+# - name: Provision default Grafana dashboards
+#   become: yes
+#   copy:
+#     src: '{{item}}.json'
+#     dest: /var/www/monitoring/grafana/provisioning/dashboards/json/{{item}}.json
+#   loop:
+#     - docker-monitoring
+#     - docker-alerts
 - name: Create monitoring Docker network
   community.docker.docker_network:
     name: monitoring
@@ -91,7 +94,7 @@
       - subnet: 172.19.0.0/16
 - name: Install Loki Docker driver
   community.docker.docker_plugin:
-    plugin_name: grafana/loki-docker-driver:2.8.0
+    plugin_name: grafana/loki-docker-driver:{{ loki_version }}
     alias: loki
     state: enable
 - name: Copy loki log driver default config file
@@ -100,10 +103,10 @@
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
 - name: Run monitoring Docker containers
-  community.docker.docker_compose:
-    project_src: /var/www/monitoring/
-    pull: yes
-    build: yes
+  community.docker.docker_compose_v2:
+    project_src: /var/www/monitoring
+    pull: always
+    build: always
   notify: recreate caddy docker container
 - meta: flush_handlers
 - name: Update Caddyfile

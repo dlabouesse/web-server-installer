@@ -2,9 +2,11 @@
 - name: "Install web server"
   hosts: all
   tasks:
-    - import_role:
-        name: hostname
-      tags: hostname
+# Hostname should be configured on OS installation
+    # - import_role:
+    #     name: hostname
+    #   tags: hostname
+# TODO: verify mails are sent and received
     - import_role:
         name: postfix
       tags: postfix
@@ -12,13 +14,16 @@
         name: opendkim
       tags: opendkim
       when: enable_dkim is defined and enable_dkim == true
-    - import_role:
-        name: cron-apt
-      tags: cron-apt
-      when: auto_update is defined
+# The following commented roles have not been tested on Debian 12
+    # - import_role:
+    #     name: cron-apt
+    #   tags: cron-apt
+    #   when: auto_update is defined
+# TODO: verify fail2ban is up and running
     - import_role:
         name: fail2ban
       tags: fail2ban
+# TODO: verify portsentry is up and running
     - import_role:
         name: portsentry
       tags: portsentry
@@ -28,27 +33,28 @@
     - import_role:
         name: caddy
       tags: caddy
+# TODO: provision default Grafana datasources, dashboards provider and notifiers
     - import_role:
         name: monitoring
       tags: monitoring
-# The following roles have not been tested on Debian 11
-    # - import_role:
-    #     name: openvpn
-    #   tags: openvpn
-    #   when: install_vpn is defined and install_vpn == true
-    # - import_role:
-    #     name: smb
-    #   tags: smb
-    #   when: install_vpn is defined and install_vpn == true
-    # - import_role:
-    #     name: nextcloud
-    #   tags: nextcloud
-    #   when: install_nextcloud is defined and install_nextcloud == true
-    # - import_role:
-    #     name: wordpress
-    #   tags: wordpress
-    #   when: wordpress_websites is defined and wordpress_websites | length > 0
-    # - import_role:
-    #     name: prestashop
-    #   tags: prestashop
-    #   when: prestashop_websites is defined and prestashop_websites | length > 0
+# The following commented roles have not been tested on Debian 12
+#     - import_role:
+#         name: openvpn
+#       tags: openvpn
+#       when: install_vpn is defined and install_vpn == true
+#     - import_role:
+#         name: smb
+#       tags: smb
+#       when: install_vpn is defined and install_vpn == true
+#     - import_role:
+#         name: nextcloud
+#       tags: nextcloud
+#       when: install_nextcloud is defined and install_nextcloud == true
+#     - import_role:
+#         name: wordpress
+#       tags: wordpress
+#       when: wordpress_websites is defined and wordpress_websites | length > 0
+#     - import_role:
+#         name: prestashop
+#       tags: prestashop
+#       when: prestashop_websites is defined and prestashop_websites | length > 0

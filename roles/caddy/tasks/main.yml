@@ -12,18 +12,18 @@
   template:
     src: 'Caddyfile.j2'
     dest: /var/www/caddy/Caddyfile
-- name: Configure Caddy docker-compose.yml
+- name: Configure Caddy Docker compose.yml
   become: yes
   template:
-    src: docker-compose.yml.j2
-    dest: /var/www/caddy/docker-compose.yml
+    src: compose.yml.j2
+    dest: /var/www/caddy/compose.yml
 - name: Create caddy-proxy Docker network
   community.docker.docker_network:
     name: caddy-proxy
-    ipam_config:
-      - subnet: 172.18.0.0/16
+#     ipam_config:
+#       - subnet: 172.18.0.0/16
 - name: Run Caddy Docker container
-  community.docker.docker_compose:
-    project_src: /var/www/caddy/
-    pull: yes
-    build: yes
+  community.docker.docker_compose_v2:
+    project_src: /var/www/caddy
+    pull: always
+    build: always

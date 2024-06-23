@@ -39,15 +39,15 @@
     groups: docker
     append: yes
 - meta: reset_connection
-- name: Install pip
-  become: yes
-  apt:
-    name:
-      - python3-pip
-    update_cache: yes
-- name: Install Docker and Docker Compose SDKs for Python
-  pip:
-    name:
-      - docker
-      - docker-compose<2.0.0
-    state: latest
+# - name: Install pip
+#   become: yes
+#   apt:
+#     name:
+#       - python3-pip
+#     update_cache: yes
+# - name: Install Docker and Docker Compose SDKs for Python
+#   pip:
+#     name:
+#       - docker
+#       - docker-compose<2.0.0
+#     state: latest
