@@ -46,7 +46,7 @@ The install phase:
 - Configures hostname
 - Installs and configures Postfix
 - Installs and configures OpenDKIM (Optional, see [Optional DKIM support](#Optional-DKIM-support))
-- Optionally sets up weekly security updates
+- ~Optionally sets up weekly security updates~ (not tested on Debian 12)
 - Installs and configures fail2ban. Also installs firewalld as firewall.
 - Installs PortSentry to prevent port scanning
 - Installs Docker and Docker Compose
@@ -64,7 +64,7 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
 **You're all set!**
 
 ---
-**The following operations have not been tested on Debian 11.**
+**The following operations have not been tested on Debian 12.**
 
 - Installs OpenVPN (optional)
     - Configures 2 OpenVPN servers with 2FA enabled

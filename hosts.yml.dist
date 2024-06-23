@@ -6,11 +6,8 @@ all:
     ansible_user: #user
     ansible_port: #ssh_port
     admin_email:  #admin_email
-    # Use the following line to force using python 3
-    # ansible_python_interpreter: /usr/bin/python3
     enable_dkim: true
     auto_update: false
-    # upload_max_size: 1g
 
     ########## VPN
     # install_vpn: true

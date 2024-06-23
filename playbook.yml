@@ -18,7 +18,7 @@
     # - import_role:
     #     name: cron-apt
     #   tags: cron-apt
-    #   when: auto_update is defined
+    #   when: auto_update is defined and auto_update == true
 # TODO: verify fail2ban is up and running
     - import_role:
         name: fail2ban
