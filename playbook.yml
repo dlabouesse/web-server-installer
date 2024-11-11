@@ -6,7 +6,6 @@
     # - import_role:
     #     name: hostname
     #   tags: hostname
-# TODO: verify mails are sent and received
     - import_role:
         name: postfix
       tags: postfix
@@ -33,7 +32,6 @@
     - import_role:
         name: caddy
       tags: caddy
-# TODO: provision default Grafana datasources, dashboards provider and notifiers
     - import_role:
         name: monitoring
       tags: monitoring

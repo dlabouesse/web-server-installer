@@ -124,6 +124,8 @@
   template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
+  notify: restart docker
+- meta: flush_handlers
 - name: Run monitoring Docker containers
   community.docker.docker_compose_v2:
     project_src: /var/www/monitoring

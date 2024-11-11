@@ -24,4 +24,20 @@
     - { mode: 'TCP_MODE', value: 'atcp' }
     - { mode: 'UDP_MODE', value: 'audp' }
   notify: restart portsentry
+- name: Configure firewalld to allow portsentry TCP ports
+  become: yes
+  ansible.posix.firewalld:
+    port: 1-1024/tcp
+    state: enabled
+    immediate: true
+    permanent: true
+  notify: Reload firewalld
+- name: Configure firewalld to allow portsentry UDP ports
+  become: yes
+  ansible.posix.firewalld:
+    port: 1-1024/udp
+    state: enabled
+    immediate: true
+    permanent: true
+  notify: Reload firewalld
 - meta: flush_handlers
