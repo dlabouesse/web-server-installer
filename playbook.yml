@@ -2,10 +2,10 @@
 - name: "Install web server"
   hosts: all
   tasks:
-# Hostname should be configured on OS installation
-    # - import_role:
-    #     name: hostname
-    #   tags: hostname
+    - import_role:
+        name: hostname
+      tags: hostname
+      when: manage_hostname is defined and manage_hostname == true
     - import_role:
         name: postfix
       tags: postfix
