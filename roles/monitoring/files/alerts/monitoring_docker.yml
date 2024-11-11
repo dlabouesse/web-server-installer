@@ -1,0 +1,93 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: 1m-evalutation
+      folder: docker-alerts
+      interval: 1m
+      rules:
+        - uid: alert_monitoring_docker
+          title: Monitoring Docker containers
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 86400
+                to: 0
+              datasourceUid: prometheus_default
+              model:
+                adhocFilters: []
+                datasource:
+                    type: prometheus
+                    uid: prometheus_default
+                editorMode: code
+                expr: count(container_last_seen{name=~"^monitoring.*"})
+                format: time_series
+                instant: false
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 15000
+                legendFormat: All
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - D
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 7
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - E
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: docker_alerts
+          panelId: 1
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: docker_alerts
+            __panelId__: "1"
+          isPaused: false
+          notification_settings:
+            receiver: Admin email

@@ -9,9 +9,9 @@ Tested with Debian 12 on OVHCloud KS3 server.
 ### Requirements
 
 - The server must have a user account with sudo rights. (Ensure the user account has a password as well as the root account.) To configure the passwords you can:
-  - Run `sudo passwd user`
+  - Run `sudo passwd {{user}}`
   - Run `sudo su -` then `passwd`
-- Add your SSH public key to enable passwordless SSH login for the user account. (`ssh-copy-id -i ~/.ssh/id_rsa user@hostanme`)
+- Add your SSH public key to enable passwordless SSH login for the user account. (`ssh-copy-id -i ~/.ssh/id_rsa {{user}}@{{hostname}}`)
 - On localhost, please install the required Ansible mobules `ansible-galaxy collection install -r requirements.yml`
 
 ### Configuration
@@ -85,7 +85,7 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
 
 ## Version control
 
-According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 2.8.0 in [roles/monitoring/templates/docker-compose.yml.j2](roles/monitoring/templates/docker-compose.yml.j2) and [roles/monitoring/tasks/main.yml](roles/monitoring/tasks/main.yml).
+According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 3.2.1 in [roles/monitoring/templates/compose.yml.j2](roles/monitoring/templates/compose.yml.j2) and [roles/monitoring/tasks/main.yml](roles/monitoring/tasks/main.yml).
 
 ## Optional DKIM support
 

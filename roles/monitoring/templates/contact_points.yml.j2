@@ -1,0 +1,11 @@
+apiVersion: 1
+contactPoints:
+    - orgId: 1
+      name: Admin email
+      receivers:
+        - uid: admin_email
+          type: email
+          settings:
+            addresses: {{ admin_email }}
+            singleEmail: false
+          disableResolveMessage: false

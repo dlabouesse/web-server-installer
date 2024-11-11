@@ -12,6 +12,22 @@ services:
             - 8080
         depends_on:
             - loki
+    node_exporter:
+        image: prom/node-exporter
+        restart: unless-stopped
+        volumes:
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - /:/rootfs:ro
+        command:
+            - '--path.procfs=/host/proc'
+            - '--path.rootfs=/rootfs'
+            - '--path.sysfs=/host/sys'
+            - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+        expose:
+            - 9100
+        depends_on:
+            - loki
     prometheus:
         image: prom/prometheus
         restart: unless-stopped
@@ -41,6 +57,9 @@ services:
             - GF_SMTP_ENABLED=true
             - GF_SMTP_HOST=smtp:25
             - GF_SMTP_FROM_ADDRESS=grafana@{{ hostname }}
+            - GF_SECURITY_ADMIN_EMAIL={{ admin_email }}
+            - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/docker_monitoring.json
+            - GF_SERVER_ROOT_URL=https://{{ grafana_subdomain }}.{{ hostname }}
         networks:
             - default
             - proxy
@@ -71,7 +90,9 @@ services:
         restart: unless-stopped
 {% if enable_dkim is defined and enable_dkim == true %}
         volumes:
+{% if hubbed_hosts_file.stat.exists %}
             - ./smtp/hubbed_hosts:/etc/exim4/hubbed_hosts
+{% endif %}
             - ./smtp/dkim-config:/etc/exim4/_docker_additional_macros:ro
             - ./smtp/{{ grafana_subdomain }}.private:/etc/exim4/domain.key:ro
         environment:

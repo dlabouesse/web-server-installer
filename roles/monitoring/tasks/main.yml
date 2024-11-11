@@ -15,7 +15,8 @@
     - /var/www/monitoring/grafana/provisioning/datasources
     - /var/www/monitoring/grafana/provisioning/dashboards
     - /var/www/monitoring/grafana/provisioning/dashboards/json
-    - /var/www/monitoring/grafana/provisioning/notifiers
+    - /var/www/monitoring/grafana/provisioning/dashboards/json/docker-alerts
+    - /var/www/monitoring/grafana/provisioning/alerting
 - name: Check for local hubbed_hosts file
   local_action: stat path="{{playbook_dir}}/hosts/{{hostname}}/hubbed_hosts"
   register: hubbed_hosts_file
@@ -57,8 +58,8 @@
     dest: /var/www/monitoring/compose.yml
 - name: Configure prometheus.yml
   become: yes
-  template:
-    src: prometheus.yml.j2
+  copy:
+    src: prometheus.yml
     dest: /var/www/monitoring/prometheus/prometheus.yml
 - name: Configure loki-config.yaml
   become: yes
@@ -70,23 +71,44 @@
   get_url:
     url: https://raw.githubusercontent.com/grafana/loki/v{{ loki_version }}/clients/cmd/promtail/promtail-docker-config.yaml
     dest: /var/www/monitoring/promtail/promtail-config.yaml
-# - name: Provision default Grafana datasources, dashboards provider and notifiers
-#   become: yes
-#   template:
-#     src: '{{item}}.yml.j2'
-#     dest: /var/www/monitoring/grafana/provisioning/{{item}}/{{item}}.yaml
-#   loop:
-#     - datasources
-#     - dashboards
-#     - notifiers
-# - name: Provision default Grafana dashboards
-#   become: yes
-#   copy:
-#     src: '{{item}}.json'
-#     dest: /var/www/monitoring/grafana/provisioning/dashboards/json/{{item}}.json
-#   loop:
-#     - docker-monitoring
-#     - docker-alerts
+- name: Provision default Grafana datasources and dashboards provider
+  become: yes
+  copy:
+    src: '{{item}}.yml'
+    dest: /var/www/monitoring/grafana/provisioning/{{item}}/{{item}}.yaml
+  loop:
+    - datasources
+    - dashboards
+- name: Provision default Grafana dashboards
+  become: yes
+  copy:
+    src: 'dashboards/{{item}}.json'
+    dest: /var/www/monitoring/grafana/provisioning/dashboards/json/{{item}}.json
+  loop:
+    - docker_monitoring
+    - docker_node_exporter
+- name: Provision default Grafana alert dashboards
+  become: yes
+  copy:
+    src: 'dashboards/{{item}}.json'
+    dest: /var/www/monitoring/grafana/provisioning/dashboards/json/docker-alerts/{{item}}.json
+  loop:
+    - docker_alerts
+- name: Provision default Grafana contact points
+  become: yes
+  template:
+    src: '{{item}}.yml.j2'
+    dest: /var/www/monitoring/grafana/provisioning/alerting/{{item}}.yaml
+  loop:
+    - contact_points
+- name: Provision default Grafana alerts
+  become: yes
+  copy:
+    src: 'alerts/{{item}}.yml'
+    dest: /var/www/monitoring/grafana/provisioning/alerting/{{item}}.yaml
+  loop:
+    - caddy_docker
+    - monitoring_docker
 - name: Create monitoring Docker network
   community.docker.docker_network:
     name: monitoring

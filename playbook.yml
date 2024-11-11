@@ -14,7 +14,7 @@
         name: opendkim
       tags: opendkim
       when: enable_dkim is defined and enable_dkim == true
-# The following commented roles have not been tested on Debian 12
+# The following commented role has not been tested on Debian 12
     # - import_role:
     #     name: cron-apt
     #   tags: cron-apt
