@@ -2,7 +2,7 @@
 
 Tool to install and configure web servers from scratch using Ansible.
 
-Tested with Debian 12 on OVHCloud KS3 server.
+Tested with Debian 12 on OVHCloud VPS and KS3 server.
 
 ## Setup
 
