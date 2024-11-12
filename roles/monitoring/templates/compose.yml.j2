@@ -82,6 +82,8 @@ services:
         volumes:
             - ./promtail/:/mnt/config/
             - /var/log:/var/log
+            - /run/log/journal/:/run/log/journal/
+            - /etc/machine-id:/etc/machine-id
         command: -config.file=/mnt/config/promtail-config.yaml -log.level=warn
         depends_on:
             - loki
