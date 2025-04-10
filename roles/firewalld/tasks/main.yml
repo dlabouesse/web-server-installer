@@ -10,4 +10,90 @@
     src: ssh.xml.j2
     dest: /etc/firewalld/services/ssh.xml
   notify: Reload firewalld
+- name: Create systemd override directory for firewalld
+  become: yes
+  file:
+    path: /etc/systemd/system/firewalld.service.d
+    state: directory
+    mode: '0755'
+  when: defer_firewalld is defined and defer_firewalld == true
+- name: Add override to delay firewalld until network is up
+  become: yes
+  copy:
+    dest: /etc/systemd/system/firewalld.service.d/override.conf
+    content: |
+      [Unit]
+      After=systemd-networkd-wait-online.service
+    mode: '0644'
+  when: defer_firewalld is defined and defer_firewalld == true
+# - name: Add override to delay firewalld until network is up
+#   become: yes
+#   copy:
+#     dest: /etc/systemd/system/firewalld.service.d/override.conf
+#     content: |
+#       [Unit]
+#       After=network-online.target dbus.service
+#       Wants=network-online.target
+
+#       [Service]
+#       ExecStartPre=/bin/sleep 10
+#       Restart=always
+#       RestartSec=5
+
+#     mode: '0644'
+#   when: defer_firewalld is defined and defer_firewalld == true
+- name: Ensure firewalld is running
+  become: yes
+  systemd:
+    name: firewalld
+    state: started
+- name: Bind the network interface to the public zone
+  become: yes
+  ansible.posix.firewalld:
+    zone: public
+    interface: "{{ ansible_default_ipv4.interface }}"
+    state: enabled
+    immediate: true
+    permanent: true
+  notify: Reload firewalld
+# - name: Disable default firewalld service
+#   become: yes
+#   systemd:
+#     name: firewalld
+#     enabled: false
+#   when: defer_firewalld is defined and defer_firewalld == true
+# - name: Create firewalld-delayed systemd unit
+#   become: yes
+#   copy:
+#     dest: /etc/systemd/system/firewalld-delayed.service
+#     content: |
+#       [Unit]
+#       Description=Delayed Firewalld Startup
+#       After=network-online.target docker.service
+#       Wants=network-online.target docker.service
+#       Requires=network-online.target
+
+#       [Service]
+#       Type=oneshot
+#       ExecStart=/bin/systemctl start firewalld.service
+#       RemainAfterExit=yes
+
+#       [Install]
+#       WantedBy=multi-user.target
+
+#   when: defer_firewalld is defined and defer_firewalld == true
+# - name: Reload systemd daemon
+#   become: yes
+#   command: systemctl daemon-reexec
+#   when: defer_firewalld is defined and defer_firewalld == true
+- name: Reload systemd configuration
+  become: yes
+  command: systemctl daemon-reload
+  when: defer_firewalld is defined and defer_firewalld == true
+# - name: Enable firewalld-delayed service
+#   become: yes
+#   systemd:
+#     name: firewalld-delayed.service
+#     enabled: true
+#   when: defer_firewalld is defined and defer_firewalld == true
 - meta: flush_handlers

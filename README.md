@@ -47,7 +47,7 @@ The install phase:
 - Installs and configures Postfix
 - Installs and configures OpenDKIM (Optional, see [Optional DKIM support](#Optional-DKIM-support))
 - ~Optionally sets up weekly security updates~ (not tested on Debian 12)
-- Installs and configures fail2ban. Also installs firewalld as firewall.
+- Installs and configures fail2ban. Also installs firewalld as firewall. If you experience with host being unreachable after reboot, you can defer firewalld startup by setting `defer_firewalld` to `true`.
 - Installs PortSentry to prevent port scanning
 - Installs Docker and Docker Compose
 - Installs Caddy as a reverse proxy
@@ -60,6 +60,11 @@ The install phase:
 This phase connects to the server(s) as the specified user and uses your personal SSH key.
 
 Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this phase.
+
+### 3. Post-install phase
+- Update DKIM DNS records (if enabled, see [Optional DKIM support](#Optional-DKIM-support))
+- Log in to Grafana with `admin/admin` credentials and change the password.
+  - Test the SMTP configuration by sending a test email from the `Admin email` contact point.
 
 **You're all set!**
 

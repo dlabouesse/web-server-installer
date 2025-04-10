@@ -8,6 +8,8 @@ all:
     admin_email:  #admin_email
     enable_dkim: true
     auto_update: false
+    # If the host becomes unreachable after reboot, try deferring firewalld startup
+    # defer_firewalld: true
 
     ########## VPN
     # install_vpn: true
