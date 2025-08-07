@@ -1,4 +1,8 @@
 {
 	email {{ admin_email }}
+
+	servers {
+		trusted_proxies static private_ranges
+	}
 }
 import sites-enabled/*

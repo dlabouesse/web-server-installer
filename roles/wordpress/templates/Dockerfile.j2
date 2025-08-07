@@ -1,0 +1,8 @@
+FROM wordpress:{{ wordpress_version }}
+
+ARG USER_UID
+
+RUN groupadd -g $USER_UID {{ ansible_user }} && \
+    useradd -m -u $USER_UID -g {{ ansible_user }} {{ ansible_user }}
+
+USER {{ ansible_user }}

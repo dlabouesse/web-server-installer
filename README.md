@@ -139,6 +139,9 @@ In `hosts.yml`, add an item in the `wordpress_websites` list, and set:
 
 Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=wordpress` to deploy the new website.
 
+Default versions for WordPress and MariaDB can be set in [roles/wordpress/defaults/main.yml](roles/wordpress/defaults/main.yml). Please [verify compatibility](https://make.wordpress.org/hosting/handbook/compatibility/) before upgrading.
+WordPress is installed with automatic updates enabled, so the default version is only used for the initial install.
+
 ## Install an additional PrestaShop website
 
 In `hosts.yml`, add an item in the `prestashop_websites` list, and set:

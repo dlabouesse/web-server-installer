@@ -4,15 +4,36 @@
     path: '/var/www/{{item.hostname}}'
     state: directory
   loop: '{{ wordpress_websites }}'
-- name: Change ownership of the wp directories
+- name: Create wordpress directories
   become: yes
   file:
-    path: '/var/www/{{item.hostname}}'
+    path: '/var/www/{{item.hostname}}/wordpress'
     state: directory
     owner: '{{ ansible_user }}'
     group: '{{ ansible_user }}'
   loop: '{{ wordpress_websites }}'
-- name: Configure wordpress docker-compose.yml
+- name: Create wordpress wp-content directories
+  file:
+    path: '/var/www/{{item.hostname}}/wordpress/wp-content'
+    state: directory
+  loop: '{{ wordpress_websites }}'
+- name: Create wordpress wp-content/uploads directories
+  file:
+    path: '/var/www/{{item.hostname}}/wordpress/wp-content/uploads'
+    state: directory
+  loop: '{{ wordpress_websites }}'
+- name: Create wordpress wp-content/themes directories
+  file:
+    path: '/var/www/{{item.hostname}}/wordpress/wp-content/themes'
+    state: directory
+  loop: '{{ wordpress_websites }}'
+- name: Create wordpress wp-content/plugins directories
+  file:
+    path: '/var/www/{{item.hostname}}/wordpress/wp-content/plugins'
+    state: directory
+  loop: '{{ wordpress_websites }}'
+- name: Configure wordpress compose.yml
+  become: yes
   template:
     src: .env.j2
     dest: '/var/www/{{item.hostname}}/.env'
@@ -21,18 +42,36 @@
   command: id -u
   register: USER_UID
 - name: 'Set USER_UID docker argument'
+  become: yes
   lineinfile:
     path: '/var/www/{{item.hostname}}/.env'
     regexp: '^USER_UID='
     line: 'USER_UID={{ USER_UID.stdout }}'
   loop: '{{ wordpress_websites }}'
-- name: 'Copy docker-compose.prod.yml file'
-  copy:
-    src: 'docker-compose.yml'
-    dest: '/var/www/{{item.hostname}}/docker-compose.yml'
+  notify: reload caddy config
+- name: 'Copy compose.yml file'
+  become: yes
+  template:
+    src: 'compose.yml.j2'
+    dest: '/var/www/{{item.hostname}}/compose.yml'
+  loop: '{{ wordpress_websites }}'
+- name: 'Copy Dockerfile file'
+  become: yes
+  template:
+    src: 'Dockerfile.j2'
+    dest: '/var/www/{{item.hostname}}/wordpress/Dockerfile'
   loop: '{{ wordpress_websites }}'
 - name: Run WordPress Docker containers
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "/var/www/{{item.hostname}}/"
-    build: yes
+    pull: always
+    build: always
   loop: '{{ wordpress_websites }}'
+- name: Update Caddyfile
+  become: yes
+  template:
+    src: Caddyfile.j2
+    dest: /var/www/caddy/sites-enabled/{{item.hostname}}
+  loop: '{{ wordpress_websites }}'
+  notify: reload caddy config
+- meta: flush_handlers
