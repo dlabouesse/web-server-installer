@@ -56,6 +56,8 @@ The install phase:
     - Promotheus is installed to store cAdvisor data
     - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain (defined in [roles/monitoring/defaults/main.yml](roles/monitoring/defaults/main.yml))
     - Optional DKIM support (see [Optional DKIM support](#Optional-DKIM-support))
+- Installs a private Docker registry (optional) (See [Install a private Docker registry](#Install-a-private-Docker-registry))
+- Installs WordPress website(s) (optional) (See [Install an additional WordPress website](#install-an-additional-WordPress-website))
 
 This phase connects to the server(s) as the specified user and uses your personal SSH key.
 
@@ -84,7 +86,6 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
     - Creates admin user account
     - Preconfigures SMTP server
     - See below for [additional manual operations](#nextcloud-manual-operations)
-- Installs WordPress website(s) (optional) (See [Install an additional WordPress website](#install-an-additional-WordPress-website))
 - Installs PrestaShop website(s) (optional) (See [Install an additional PrestaShop website](#Install-an-additional-PrestaShop-website))
 ---
 
@@ -109,6 +110,31 @@ Auto updates for reverse proxy and monitoring containers can be enabled be defin
 
 If auto updates are disabled, these containers can be updated manually by running `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=caddy --tags=monitoring`.
 
+## Install a private Docker registry
+
+In `hosts.yml`, set the following variables:
+- `install_docker_registry` to `true`
+- `docker_registry_username`
+- `docker_registry_password_hash`
+
+You can generate a bcrypt hash by running `htpasswd -nbBC 10 {{docker_registry_username}} {{docker_registry_password}}`.
+
+Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=docker-registry` to deploy the registry.
+
+## Install an additional WordPress website
+
+In `hosts.yml`, add an item in the `wordpress_websites` list, and set:
+- `hostname` (The website will be installed in `/var/www/hostname/`)
+- `name` (Impacts the composer project name and the db name)
+- `db_user`
+- `db_password`
+- `db_root_password`
+
+Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=wordpress` to deploy the new website.
+
+Default versions for WordPress and MariaDB can be set in [roles/wordpress/defaults/main.yml](roles/wordpress/defaults/main.yml). Please [verify compatibility](https://make.wordpress.org/hosting/handbook/compatibility/) before upgrading.
+WordPress is installed with automatic updates enabled, so the default version is only used for the initial install.
+
 ---
 **The following features have not been tested with Debian 11**
 
@@ -127,20 +153,6 @@ In `hosts.yml`, add an item in the `vpn_client_certificates` list, and set:
 - `passphrase`
 
 Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=openvpn` to create the new certificate.
-
-## Install an additional WordPress website
-
-In `hosts.yml`, add an item in the `wordpress_websites` list, and set:
-- `hostname` (The website will be installed in `/var/www/hostname/`)
-- `name` (Impacts the composer project name and the db name)
-- `db_user`
-- `db_password`
-- `db_root_password`
-
-Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=wordpress` to deploy the new website.
-
-Default versions for WordPress and MariaDB can be set in [roles/wordpress/defaults/main.yml](roles/wordpress/defaults/main.yml). Please [verify compatibility](https://make.wordpress.org/hosting/handbook/compatibility/) before upgrading.
-WordPress is installed with automatic updates enabled, so the default version is only used for the initial install.
 
 ## Install an additional PrestaShop website
 

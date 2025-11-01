@@ -1,0 +1,3 @@
+docker_registry_subdomain: 'registry'
+docker_registry_username: 'admin'
+docker_registry_password_hash: 'ChangeMePlease!'

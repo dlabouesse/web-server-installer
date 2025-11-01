@@ -34,6 +34,10 @@
         name: monitoring
       tags: monitoring
     - import_role:
+        name: docker-registry
+      tags: docker-registry
+      when: install_docker_registry is defined and install_docker_registry == true
+    - import_role:
         name: wordpress
       tags: wordpress
       when: wordpress_websites is defined and wordpress_websites | length > 0

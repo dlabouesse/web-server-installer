@@ -1,0 +1,6 @@
+{{ docker_registry_subdomain }}.{{ hostname }} {
+    basic_auth {
+        {{ docker_registry_username }} {{ docker_registry_password_hash }}
+    }
+    reverse_proxy registry:5000
+}

@@ -1,0 +1,24 @@
+- name: Create Docker Registry directory
+  become: yes
+  file:
+    path: '{{ item }}'
+    state: directory
+  loop:
+    - /var/www
+    - /var/www/docker-registry
+- name: Configure Docker Registry Docker compose.yaml
+  become: yes
+  template:
+    src: compose.yaml.j2
+    dest: /var/www/docker-registry/compose.yaml
+- name: Run Docker Registry Docker container
+  community.docker.docker_compose_v2:
+    project_src: "/var/www/docker-registry/"
+    pull: always
+    build: always
+- name: Update Caddyfile
+  become: yes
+  template:
+    src: Caddyfile.j2
+    dest: /var/www/caddy/sites-enabled/{{ docker_registry_subdomain }}.{{ hostname }}
+  notify: reload caddy config

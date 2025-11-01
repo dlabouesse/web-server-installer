@@ -7,6 +7,7 @@ all:
     ansible_port: #ssh_port
     admin_email:  #admin_email
     enable_dkim: true
+    install_docker_registry: false
     auto_update: false
     # If the host becomes unreachable after reboot, try deferring firewalld startup
     # defer_firewalld: true

@@ -1,0 +1,13 @@
+services:
+    registry:
+        image: registry:3
+        restart: unless-stopped
+        networks:
+            - proxy
+        ports:
+            - "5000:5000"
+
+networks:
+    proxy:
+        name: caddy-proxy
+        external: true
