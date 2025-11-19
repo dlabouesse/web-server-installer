@@ -1,5 +1,7 @@
 FROM wordpress:{{ wordpress_version }}
 
+COPY custom.ini $PHP_INI_DIR/conf.d/
+
 ARG USER_UID
 
 RUN groupadd -g $USER_UID {{ ansible_user }} && \

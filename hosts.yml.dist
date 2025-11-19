@@ -41,3 +41,4 @@ all:
     #     db_user: wp_user
     #     db_password: password
     #     db_root_password: password
+    #     upload_max_filesize: "2M"

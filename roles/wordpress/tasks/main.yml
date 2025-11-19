@@ -55,6 +55,12 @@
     src: 'compose.yml.j2'
     dest: '/var/www/{{item.hostname}}/compose.yml'
   loop: '{{ wordpress_websites }}'
+- name : 'Copy custom.ini file'
+  become: yes
+  template:
+    src: 'custom.ini'
+    dest: '/var/www/{{item.hostname}}/wordpress/custom.ini'
+  loop: '{{ wordpress_websites }}'
 - name: 'Copy Dockerfile file'
   become: yes
   template:
