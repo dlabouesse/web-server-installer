@@ -23,8 +23,9 @@ services:
         depends_on:
             - db
     db:
-        image: mariadb:{{ mariadb_version }}
+        image: mariadb:{{ item.mariadb_version | default(mariadb_version) }}
         restart: unless-stopped
+        command: --max_allowed_packet={{ item.mariadb_max_allowed_packet | default(mariadb_max_allowed_packet) }}
         volumes:
             - dbdata:/var/lib/mysql
         environment:

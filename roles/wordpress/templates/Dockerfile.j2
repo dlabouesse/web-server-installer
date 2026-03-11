@@ -1,4 +1,4 @@
-FROM wordpress:{{ wordpress_version }}
+FROM wordpress:{{ item.wordpress_version | default(wordpress_version) }}
 
 COPY custom.ini $PHP_INI_DIR/conf.d/
 
