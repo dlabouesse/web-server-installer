@@ -9,7 +9,7 @@
     - /var/www/monitoring/smtp
     - /var/www/monitoring/prometheus
     - /var/www/monitoring/loki
-    - /var/www/monitoring/promtail
+    - /var/www/monitoring/alloy
     - /var/www/monitoring/grafana
     - /var/www/monitoring/grafana/provisioning
     - /var/www/monitoring/grafana/provisioning/datasources
@@ -64,13 +64,13 @@
 - name: Configure loki-config.yaml
   become: yes
   get_url:
-    url: https://raw.githubusercontent.com/grafana/loki/v{{ loki_version }}/cmd/loki/loki-local-config.yaml
+    url: https://raw.githubusercontent.com/grafana/loki/main/cmd/loki/loki-local-config.yaml
     dest: /var/www/monitoring/loki/loki-config.yaml
-- name: Configure promtail-config.yaml
+- name: Configure Alloy config
   become: yes
   copy:
-    src: 'promtail-docker-config.yml'
-    dest: /var/www/monitoring/promtail/promtail-config.yaml
+    src: 'config.alloy'
+    dest: /var/www/monitoring/alloy/config.alloy
 - name: Provision default Grafana datasources and dashboards provider
   become: yes
   copy:
@@ -112,23 +112,6 @@
 - name: Create monitoring Docker network
   community.docker.docker_network:
     name: monitoring
-    ipam_config:
-      - subnet: 172.19.0.0/16
-- name: Get architecture
-  command: dpkg --print-architecture
-  register: dpkg_architecture
-- name: Install Loki Docker driver
-  community.docker.docker_plugin:
-    plugin_name: grafana/loki-docker-driver:{{ loki_version }}-{{ dpkg_architecture.stdout }}
-    alias: loki
-    state: enable
-- name: Copy loki log driver default config file
-  become: yes
-  template:
-    src: daemon.json.j2
-    dest: /etc/docker/daemon.json
-  notify: restart docker
-- meta: flush_handlers
 - name: Run monitoring Docker containers
   community.docker.docker_compose_v2:
     project_src: /var/www/monitoring

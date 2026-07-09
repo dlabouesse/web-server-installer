@@ -66,25 +66,30 @@ services:
         depends_on:
             - loki
     loki:
-        image: grafana/loki:{{ loki_version }}
+        image: grafana/loki
         restart: unless-stopped
         volumes:
             - ./loki/:/mnt/config/
         command: -config.file=/mnt/config/loki-config.yaml -log.level=warn
         expose:
             - 3100
-        networks:
-            default:
-                ipv4_address: {{ loki_container_ipv4 }}
-    promtail:
-        image: grafana/promtail:{{ loki_version }}
+    alloy:
+        image: grafana/alloy
         restart: unless-stopped
+        user: root
         volumes:
-            - ./promtail/:/mnt/config/
-            - /var/log:/var/log
-            - /run/log/journal/:/run/log/journal/
-            - /etc/machine-id:/etc/machine-id
-        command: -config.file=/mnt/config/promtail-config.yaml -log.level=warn
+            - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+            - /var/log:/var/log:ro
+            - /run/log/journal/:/run/log/journal/:ro
+            - /var/run/docker.sock:/var/run/docker.sock
+            - alloy-data:/var/lib/alloy
+        command:
+            - run
+            - --server.http.listen-addr=0.0.0.0:12345
+            - --storage.path=/var/lib/alloy
+            - /etc/alloy/config.alloy
+        expose:
+            - 12345
         depends_on:
             - loki
     smtp:
@@ -106,6 +111,7 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
+    alloy-data:
 
 networks:
     default:

@@ -54,6 +54,7 @@ The install phase:
 - Installs and configure a monitoring interface
     - cAdvisor is installed to collect Docker containers monitoring data
     - Promotheus is installed to store cAdvisor data
+    - Grafana Alloy is installed to collect Docker and journald logs into Loki
     - Grafana is installed as monitoring dashboard with prepopulated items and is exposed through HTTPS using the `status` subdomain (defined in [roles/monitoring/defaults/main.yml](roles/monitoring/defaults/main.yml))
     - Optional DKIM support (see [Optional DKIM support](#Optional-DKIM-support))
 - Installs a private Docker registry (optional) (See [Install a private Docker registry](#Install-a-private-Docker-registry))
@@ -88,10 +89,6 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
     - See below for [additional manual operations](#nextcloud-manual-operations)
 - Installs PrestaShop website(s) (optional) (See [Install an additional PrestaShop website](#Install-an-additional-PrestaShop-website))
 ---
-
-## Version control
-
-According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 3.5.7 in [roles/monitoring/defaults/main.yml](roles/monitoring/defaults/main.yml).
 
 ## Manage hostname
 
