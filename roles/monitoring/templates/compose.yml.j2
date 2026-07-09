@@ -10,8 +10,6 @@ services:
             - /dev/disk/:/dev/disk:ro
         expose:
             - 8080
-        depends_on:
-            - loki
     node_exporter:
         image: prom/node-exporter
         restart: unless-stopped
@@ -26,8 +24,6 @@ services:
             - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
         expose:
             - 9100
-        depends_on:
-            - loki
     prometheus:
         image: prom/prometheus
         restart: unless-stopped
@@ -42,8 +38,6 @@ services:
             - '--storage.tsdb.retention.time=200h'
         expose:
             - 9090
-        depends_on:
-            - loki
     grafana:
         image: grafana/grafana
         restart: unless-stopped
@@ -63,8 +57,6 @@ services:
         networks:
             - default
             - proxy
-        depends_on:
-            - loki
     loki:
         image: grafana/loki
         restart: unless-stopped
@@ -90,8 +82,6 @@ services:
             - /etc/alloy/config.alloy
         expose:
             - 12345
-        depends_on:
-            - loki
     smtp:
         image: namshi/smtp
         restart: unless-stopped
@@ -105,8 +95,6 @@ services:
         environment:
             - MAILNAME={{ hostname }}
 {% endif %}
-        depends_on:
-            - loki
 
 volumes:
     prometheus-data:
