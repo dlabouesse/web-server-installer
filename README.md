@@ -2,7 +2,7 @@
 
 Tool to install and configure web servers from scratch using Ansible.
 
-Tested with Debian 12 on OVHCloud VPS and KS3 server.
+Tested with Debian 13 on OVHCloud VPS and KS3 server.
 
 ## Setup
 
@@ -43,10 +43,10 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.init.yml playbook.init.yml` to r
 ### 2. Install phase
 
 The install phase:
-- Configures hostname
+- Configures hostname (Optional, see [Manage hostname](#Manage-hostname))
 - Installs and configures Postfix
 - Installs and configures OpenDKIM (Optional, see [Optional DKIM support](#Optional-DKIM-support))
-- ~Optionally sets up weekly security updates~ (not tested on Debian 12)
+- ~Optionally sets up weekly security updates~ (not tested on Debian 12 and 13)
 - Installs and configures fail2ban. Also installs firewalld as firewall. If you experience with host being unreachable after reboot, you can defer firewalld startup by setting `defer_firewalld` to `true`.
 - Installs PortSentry to prevent port scanning
 - Installs Docker and Docker Compose
@@ -71,7 +71,7 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
 **You're all set!**
 
 ---
-**The following operations have not been tested on Debian 12.**
+**The following operations have not been tested on Debian 12 and 13.**
 
 - Installs OpenVPN (optional)
     - Configures 2 OpenVPN servers with 2FA enabled
@@ -91,7 +91,11 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
 
 ## Version control
 
-According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 3.2.1 in [roles/monitoring/templates/compose.yml.j2](roles/monitoring/templates/compose.yml.j2) and [roles/monitoring/tasks/main.yml](roles/monitoring/tasks/main.yml).
+According to [documentation](https://grafana.com/docs/loki/latest/installation/docker/#install-with-docker), Loki and Promtail versions are fixed to 3.5.7 in [roles/monitoring/defaults/main.yml](roles/monitoring/defaults/main.yml).
+
+## Manage hostname
+
+The hostname of the server can be managed by defining the `manage_hostname` variable in `hosts.yml`. This setting can conflict if the hostname is set from the cloud provider, so it is disabled by default.
 
 ## Optional DKIM support
 
@@ -136,7 +140,7 @@ Default versions for WordPress and MariaDB can be set in [roles/wordpress/defaul
 WordPress is installed with automatic updates enabled, so the default version is only used for the initial install.
 
 ---
-**The following features have not been tested with Debian 11**
+**The following features have not been tested with Debian 11, 12, and 13**
 
 ## NextCloud manual operations
 

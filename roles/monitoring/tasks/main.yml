@@ -114,9 +114,12 @@
     name: monitoring
     ipam_config:
       - subnet: 172.19.0.0/16
+- name: Get architecture
+  command: dpkg --print-architecture
+  register: dpkg_architecture
 - name: Install Loki Docker driver
   community.docker.docker_plugin:
-    plugin_name: grafana/loki-docker-driver:{{ loki_version }}
+    plugin_name: grafana/loki-docker-driver:{{ loki_version }}-{{ dpkg_architecture.stdout }}
     alias: loki
     state: enable
 - name: Copy loki log driver default config file
