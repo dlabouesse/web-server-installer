@@ -4,15 +4,22 @@
     name:
       - portsentry
     update_cache: yes
-- name: Configure to block TCP and UDP scans
+- name: Turn off portsentry TCP and UDP blocking
   become: yes
   lineinfile:
     path: /etc/portsentry/portsentry.conf
     regex: '^{{ item }}="\d"$'
-    line: '{{ item }}="1"'
+    line: '{{ item }}="0"'
   loop:
     - BLOCK_TCP
     - BLOCK_UDP
+  notify: restart portsentry
+- name: Turn off portsentry kill blocking
+  become: yes
+  lineinfile:
+    path: /etc/portsentry/portsentry.conf
+    regex: '^KILL_ROUTE='
+    line: '#\0'
   notify: restart portsentry
 - name: Configure to ignore TCP ports 80 and 443
   become: yes
@@ -47,4 +54,16 @@
     immediate: true
     permanent: true
   notify: Reload firewalld
+- name: Create fail2ban filter for portsentry
+  become: yes
+  copy:
+    dest: /etc/fail2ban/filter.d/portsentry.conf
+    src: 'portsentry.conf'
+  notify: restart fail2ban
+- name: Config fail2ban jail for portsentry
+  become: yes
+  copy:
+    dest: /etc/fail2ban/jail.d/portsentry.conf
+    src: 'fail2ban.conf'
+  notify: restart fail2ban
 - meta: flush_handlers
