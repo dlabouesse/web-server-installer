@@ -71,8 +71,8 @@ services:
         user: root
         volumes:
             - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+            - /etc/machine-id:/etc/machine-id:ro
             - /var/log:/var/log:ro
-            - /run/log/journal/:/run/log/journal/:ro
             - /var/run/docker.sock:/var/run/docker.sock
             - alloy-data:/var/lib/alloy
         command:

@@ -39,8 +39,7 @@ loki.relabel "journal" {
 loki.source.file "varlogs" {
 	targets = [
 		{
-			__path__ = "/var/log/*log",
-			job      = "varlogs",
+			__path__ = "/var/log/**/*.log",
 		},
 	]
 	forward_to    = [loki.write.local.receiver]
