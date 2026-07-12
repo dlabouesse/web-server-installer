@@ -9,7 +9,7 @@ all:
     enable_dkim: true
     install_docker_registry: false
     auto_update: false
-    # If the host becomes unreachable after reboot, try deferring firewalld startup
+    # [DEPRECATED] If the host becomes unreachable after reboot, try deferring firewalld startup
     # defer_firewalld: true
 
     ########## VPN
