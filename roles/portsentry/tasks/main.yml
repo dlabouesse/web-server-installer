@@ -1,67 +1,88 @@
-- name: Install portsentry
+# Specific setup for Debian 13 (https://github.com/portsentry/portsentry/blob/master/README.md)
+- name: Ensure required dependencies are installed
   become: yes
-  apt:
+  ansible.builtin.apt:
     name:
-      - portsentry
+      - curl
+      - gpg
+    state: present
     update_cache: yes
-- name: Turn off portsentry TCP and UDP blocking
+
+- name: Download the openSUSE PortSentry GPG signing key
   become: yes
-  lineinfile:
+  ansible.builtin.get_url:
+    url: https://download.opensuse.org/repositories/home:/portsentry/Debian_13//Release.key
+    dest: /etc/apt/trusted.gpg.d/portsentry.asc
+    mode: '0644'
+  register: download_key
+
+- name: Dearmor the GPG key for apt consumption
+  become: yes
+  ansible.builtin.command:
+    cmd: gpg --dearmor -o /etc/apt/trusted.gpg.d/portsentry.gpg /etc/apt/trusted.gpg.d/portsentry.asc
+    creates: /etc/apt/trusted.gpg.d/portsentry.gpg
+  when: download_key.changed
+
+- name: Clean up temporary ASCII key file
+  become: yes
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg.d/portsentry.asc
+    state: absent
+
+- name: Add openSUSE PortSentry DEB repository
+  become: yes
+  ansible.builtin.deb822_repository:
+    name: portsentry
+    types: deb
+    uris: https://download.opensuse.org/repositories/home:/portsentry/Debian_13/
+    suites: /
+    signed_by: /etc/apt/trusted.gpg.d/portsentry.gpg
+    state: present
+  register: repo_added
+
+- name: Update apt cache if repository was added
+  become: yes
+  ansible.builtin.apt:
+    update_cache: yes
+  when: repo_added.changed
+
+- name: Install PortSentry package
+  become: yes
+  ansible.builtin.apt:
+    name: portsentry
+    state: present
+# End of specific setup for Debian 13
+
+- name: Turn off PortSentry TCP and UDP blocking
+  become: yes
+  ansible.builtin.lineinfile:
     path: /etc/portsentry/portsentry.conf
-    regex: '^{{ item }}="\d"$'
+    regexp: '^{{ item }}='
     line: '{{ item }}="0"'
   loop:
     - BLOCK_TCP
     - BLOCK_UDP
   notify: restart portsentry
-- name: Turn off portsentry kill blocking
+
+- name: Unmask portsentry service
   become: yes
-  lineinfile:
-    path: /etc/portsentry/portsentry.conf
-    regex: '^KILL_ROUTE='
-    line: '#\0'
+  systemd:
+    name: portsentry
+    masked: no
   notify: restart portsentry
-- name: Configure Portsentry to scan TCP ports from 1 to 1024
-  become: yes
-  ansible.builtin.lineinfile:
-    path: /etc/portsentry/portsentry.conf
-    regexp: '^ADVANCED_PORTS_TCP='
-    line: 'ADVANCED_PORTS_TCP="1024"'
-  notify: restart portsentry
-- name : Configure Portsentry to scan UDP ports from 1 to 1024
-  become: yes
-  ansible.builtin.lineinfile:
-    path: /etc/portsentry/portsentry.conf
-    regexp: '^ADVANCED_PORTS_UDP='
-    line: 'ADVANCED_PORTS_UDP="1024"'
-  notify: restart portsentry
-- name: Configure to ignore TCP ports 80 and 443
-  become: yes
-  lineinfile:
-    path: /etc/portsentry/portsentry.conf
-    regex: '^ADVANCED_EXCLUDE_TCP='
-    line: 'ADVANCED_EXCLUDE_TCP="80,443"'
-  notify: restart portsentry
-- name: Configure TCP and UDP to advanced mode
-  become: yes
-  lineinfile:
-    path: /etc/default/portsentry
-    regex: '^{{ item.mode }}='
-    line: '{{ item.mode }}="{{ item.value }}"'
-  loop:
-    - { mode: 'TCP_MODE', value: 'atcp' }
-    - { mode: 'UDP_MODE', value: 'audp' }
-  notify: restart portsentry
+
 - name: Create fail2ban filter for portsentry
   become: yes
   copy:
     dest: /etc/fail2ban/filter.d/portsentry.conf
     src: 'portsentry.conf'
   notify: restart fail2ban
+
 - name: Config fail2ban jail for portsentry
   become: yes
   copy:
     dest: /etc/fail2ban/jail.d/portsentry.conf
     src: 'fail2ban.conf'
   notify: restart fail2ban
+
 - meta: flush_handlers
