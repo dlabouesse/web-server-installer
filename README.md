@@ -72,7 +72,6 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
 
 ---
 ## TODO
-The firewall does not work as intended. It seems that too many ports are open, and that banned IP addresses are not added to the firewall... Needs further investigation.
 
 Ensure fail2ban and portsentry are compatible with Debian 13. (Not tested yet)
 - `sudo journalctl -u portsentry -f` to check if portsentry is running properly.
