@@ -21,12 +21,26 @@
     regex: '^KILL_ROUTE='
     line: '#\0'
   notify: restart portsentry
+- name: Configure Portsentry to scan TCP ports from 1 to 1024
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/portsentry/portsentry.conf
+    regexp: '^ADVANCED_PORTS_TCP='
+    line: 'ADVANCED_PORTS_TCP="1024"'
+  notify: restart portsentry
+- name : Configure Portsentry to scan UDP ports from 1 to 1024
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/portsentry/portsentry.conf
+    regexp: '^ADVANCED_PORTS_UDP='
+    line: 'ADVANCED_PORTS_UDP="1024"'
+  notify: restart portsentry
 - name: Configure to ignore TCP ports 80 and 443
   become: yes
   lineinfile:
     path: /etc/portsentry/portsentry.conf
     regex: '^ADVANCED_EXCLUDE_TCP='
-    line: 'ADVANCED_EXCLUDE_TCP="80,113,139,443"'
+    line: 'ADVANCED_EXCLUDE_TCP="80,443"'
   notify: restart portsentry
 - name: Configure TCP and UDP to advanced mode
   become: yes
@@ -38,22 +52,6 @@
     - { mode: 'TCP_MODE', value: 'atcp' }
     - { mode: 'UDP_MODE', value: 'audp' }
   notify: restart portsentry
-- name: Configure firewalld to allow portsentry TCP ports
-  become: yes
-  ansible.posix.firewalld:
-    port: 1-1024/tcp
-    state: enabled
-    immediate: true
-    permanent: true
-  notify: Reload firewalld
-- name: Configure firewalld to allow portsentry UDP ports
-  become: yes
-  ansible.posix.firewalld:
-    port: 1-1024/udp
-    state: enabled
-    immediate: true
-    permanent: true
-  notify: Reload firewalld
 - name: Create fail2ban filter for portsentry
   become: yes
   copy:
