@@ -47,8 +47,8 @@ The install phase:
 - Installs and configures Postfix
 - Installs and configures OpenDKIM (Optional, see [Optional DKIM support](#Optional-DKIM-support))
 - ~Optionally sets up weekly security updates~ (not tested on Debian 12 and 13)
-- Installs and configures fail2ban. Also installs firewalld as firewall. If you experience with host being unreachable after reboot, you can defer firewalld startup by setting `defer_firewalld` to `true`.
-- Installs PortSentry to prevent port scanning
+- Installs and configures fail2ban. Also installs firewalld as firewall. ~~If you experience with host being unreachable after reboot, you can defer firewalld startup by setting `defer_firewalld` to `true`.~~ (Should not be necessary anymore as fail2ban and docker are now started after firewalld.)
+- Installs PortSentry to prevent port scanning. PortSentry does not block the IP address of the scanner, but it will log the event to let fail2ban handle the banning.
 - Installs Docker and Docker Compose
 - Installs Caddy as a reverse proxy
 - Installs and configure a monitoring interface
@@ -70,6 +70,19 @@ Run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml` to run this ph
   - Test the SMTP configuration by sending a test email from the `Admin email` contact point.
 
 **You're all set!**
+
+---
+## TODO
+
+Ensure fail2ban and portsentry are compatible with Debian 13. (Not tested yet)
+- `sudo journalctl -u portsentry -f` to check if portsentry is running properly.
+- `sudo fail2ban-regex "systemd-journal" /etc/fail2ban/filter.d/portsentry.conf` to check if fail2ban is properly configured to ban portsentry events.
+- `sudo fail2ban-client status` and `sudo fail2ban-client status portsentry` to check the status of fail2ban and the portsentry jail.
+- `sudo firewall-cmd --direct --get-all-rules` to check if fail2ban is well synchronized with firewalld and is able to ban IP addresses.
+
+In case of accidental ban, run `sudo fail2ban-client unban YOUR_IP_ADDRESS --jail portsentry` to unban your IP address.
+
+And remember to purge /etc/hosts.deny files if they contain hundreds of IP addresses. You can run `sudo echo "" > /etc/hosts.deny`.
 
 ---
 **The following operations have not been tested on Debian 12 and 13.**

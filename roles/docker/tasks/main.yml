@@ -41,6 +41,23 @@
     groups: docker
     append: yes
 - meta: reset_connection
+- name: Create /etc/systemd/system/docker.service.d directory
+  become: yes
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: '0755'
+- name: Ensure Docker service starts after firewalld
+  become: yes
+  copy:
+    dest: /etc/systemd/system/docker.service.d/firewalld-dependency.conf
+    mode: '0644'
+    content: |
+      [Unit]
+      After=firewalld.service
+      Requires=firewalld.service
+  notify: Reload systemd daemon
+- meta: flush_handlers
 # - name: Install pip
 #   become: yes
 #   apt:
