@@ -47,7 +47,7 @@ The install phase:
 - Installs and configures Postfix
 - Installs and configures OpenDKIM (Optional, see [Optional DKIM support](#Optional-DKIM-support))
 - ~Optionally sets up weekly security updates~ (not tested on Debian 12)
-- Installs and configures fail2ban. Also installs firewalld as firewall. If you experience with host being unreachable after reboot, you can defer firewalld startup by setting `defer_firewalld` to `true`.
+- Installs and configures fail2ban. Also installs firewalld as firewall. ~~If you experience with host being unreachable after reboot, you can defer firewalld startup by setting `defer_firewalld` to `true`.~~ (Should not be necessary anymore as fail2ban and docker are now started after firewalld.)
 - Installs PortSentry to prevent port scanning. PortSentry does not block the IP address of the scanner, but it will log the event to let fail2ban handle the banning.
 - Installs Docker and Docker Compose
 - Installs Caddy as a reverse proxy
