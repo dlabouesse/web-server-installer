@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# This script creates a backup containing the full db, all the uploads ever created and the plugins installed.
+# Run `./backup/create_backup.sh` to create a backup.
+
+timestamp=$(date +"%Y%m%d_%H%M%S")
+
+source ./backup/.env.sh
+
+if [ -z "$BACKUP_KEY" ]
+then
+    echo "BACKUP_KEY is blank. Please set BACKUP_KEY before running this script."
+    exit 1
+fi
+
+/usr/bin/docker compose exec -T db bin/bash -c 'mariadb-dump $MYSQL_DATABASE -uroot -p$MYSQL_ROOT_PASSWORD 2> /dev/null' > backup/db/{{ item.hostname }}.sql
+tar cf backup/wp-content.tar wordpress/wp-content/uploads/* wordpress/wp-content/plugins/*
+cd backup
+tar zcf {{ item.hostname }}_$timestamp.tar.gz $(ls db/{{ item.hostname }}.sql wp-content.tar 2> /dev/null)
+rm db/{{ item.hostname }}.sql wp-content.tar 2> /dev/null
+
+gpg -c --batch --cipher-algo AES256 --passphrase $BACKUP_KEY -o {{ item.hostname }}_$timestamp.tar.gz.gpg {{ item.hostname }}_$timestamp.tar.gz
+rm {{ item.hostname }}_$timestamp.tar.gz
+
+ls -t {{ item.hostname }}_*.tar.gz.gpg | tail -n +2 | xargs rm -- 2> /dev/null

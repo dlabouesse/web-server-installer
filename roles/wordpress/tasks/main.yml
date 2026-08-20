@@ -1,4 +1,4 @@
-- name: Create wordpress directories
+- name: Create website directories
   become: yes
   file:
     path: '/var/www/{{item.hostname}}'
@@ -66,6 +66,36 @@
   template:
     src: 'Dockerfile.j2'
     dest: '/var/www/{{item.hostname}}/wordpress/Dockerfile'
+  loop: '{{ wordpress_websites }}'
+- name: 'Create website backup directories'
+  become: yes
+  file:
+    path: '/var/www/{{item.hostname}}/backup'
+    state: directory
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+  loop: '{{ wordpress_websites }}'
+- name: 'Create website backup/db directories'
+  become: yes
+  file:
+    path: '/var/www/{{item.hostname}}/backup/db'
+    state: directory
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+  loop: '{{ wordpress_websites }}'
+- name: 'Copy website backup scripts'
+  become: yes
+  template:
+    src: 'create_backup.sh.j2'
+    dest: '/var/www/{{item.hostname}}/backup/create_backup.sh'
+    mode: '0755'
+  loop: '{{ wordpress_websites }}'
+- name: 'Create .env.sh file for backup script'
+  become: yes
+  template:
+    src: '.env.sh.j2'
+    dest: '/var/www/{{item.hostname}}/backup/.env.sh'
+    mode: '0644'
   loop: '{{ wordpress_websites }}'
 - name: Run WordPress Docker containers
   community.docker.docker_compose_v2:

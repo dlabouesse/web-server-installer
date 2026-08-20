@@ -43,3 +43,4 @@ all:
     #     db_root_password: password
     #     upload_max_filesize: "2M"
     #     post_max_size: "8M"
+    #     backup_key: your_backup_key_here
