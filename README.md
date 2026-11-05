@@ -146,6 +146,8 @@ In `hosts.yml`, add an item in the `wordpress_websites` list, and set:
 
 Then, run `ansible-playbook -i hosts/{{domain}}/hosts.yml playbook.yml --tags=wordpress` to deploy the new website.
 
+To enable automated backups for a website, place an OpenStack OpenRC file named `openrc-<hostname>.sh` in `hosts/{{domain}}/`, where `<hostname>` matches that website's `hostname` value. The installer copies it to the deployment user's home directory and schedules an encrypted backup upload every Monday at 04:00 server-local time. The OpenStack Swift client is installed for opted-in websites, and backups are uploaded to a Swift container named after the website hostname. Remote backups are retained; only the newest encrypted archive is kept locally. Set `backup_key` for the website in `hosts.yml` to encrypt backups.
+
 Default versions for WordPress and MariaDB can be set in [roles/wordpress/defaults/main.yml](roles/wordpress/defaults/main.yml). Please [verify compatibility](https://make.wordpress.org/hosting/handbook/compatibility/) before upgrading.
 WordPress is installed with automatic updates enabled, so the default version is only used for the initial install.
 

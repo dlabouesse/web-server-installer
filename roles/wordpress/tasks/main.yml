@@ -95,7 +95,9 @@
   template:
     src: '.env.sh.j2'
     dest: '/var/www/{{item.hostname}}/backup/.env.sh'
-    mode: '0644'
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+    mode: '0600'
   loop: '{{ wordpress_websites }}'
 - name: Run WordPress Docker containers
   community.docker.docker_compose_v2:
@@ -111,3 +113,29 @@
   loop: '{{ wordpress_websites }}'
   notify: reload caddy config
 - meta: flush_handlers
+- name: Configure OpenStack authentication for OVH Public Cloud
+  ansible.builtin.copy:
+    src: '{{ inventory_dir }}/openrc-{{ item.hostname }}.sh'
+    dest: '~/.openrc-{{ item.hostname }}.sh'
+    mode: '0600'
+  when: (inventory_dir + '/openrc-' + item.hostname + '.sh') is file
+  loop: '{{ wordpress_websites }}'
+- name: Install OpenStack Swift client for automated backups
+  become: yes
+  ansible.builtin.apt:
+    name: python3-swiftclient
+    state: present
+    update_cache: yes
+  when: (inventory_dir + '/openrc-' + item.hostname + '.sh') is file
+  loop: '{{ wordpress_websites }}'
+- name: Schedule weekly WordPress backups to OpenStack Swift
+  become: yes
+  ansible.builtin.cron:
+    name: 'WordPress Swift backup {{ item.hostname }}'
+    user: '{{ ansible_user }}'
+    minute: '0'
+    hour: '4'
+    weekday: '1'
+    job: 'cd /var/www/{{ item.hostname }} && ./backup/create_backup.sh'
+    state: "{{ 'present' if (inventory_dir + '/openrc-' + item.hostname + '.sh') is file else 'absent' }}"
+  loop: '{{ wordpress_websites }}'
